@@ -43,9 +43,15 @@
 </script>
 
 <link rel="stylesheet" href="style.css"/>
+
+<script type="importmap">
+  { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.min.js" } }
+</script>
 </head>
 
 <body class="bg-ink text-paper font-body antialiased">
+
+<canvas id="scene" aria-hidden="true"></canvas>
 
 <!-- ============ GRAIN / NOISE OVERLAY ============ -->
 <div class="noise-overlay" aria-hidden="true"></div>
@@ -495,5 +501,6 @@
 </footer>
 
 <script src="script.js"></script>
+<script type="module" src="scene.js"></script>
 </body>
 </html>

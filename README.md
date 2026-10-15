@@ -9,11 +9,14 @@ Personal portfolio of **John Achadu (JohnnyMax)**, a full-stack JavaScript engin
 | Markup | HTML5 |
 | Styling | CSS3, Tailwind CSS (Play CDN) |
 | Behaviour | Vanilla JavaScript (no framework, no build step) |
+| 3D | Three.js r169 with custom GLSL shaders, loaded through an import map |
 | Icons | Devicon |
 | Fonts | Google Fonts: Black Ops One, Rubik Spray Paint, Inter, JetBrains Mono, Space Grotesk |
 
 ## Features
 
+- Scroll-driven 3D particle background that morphs into a new shape for each section: a data wave, a globe, a lattice cube, a node network, a double helix, and an envelope
+- The 3D layer downloads only on devices that can show it: it is skipped for reduced-motion users, devices without WebGL2, and if the CDN fails, leaving the rest of the site untouched
 - Navbar that turns solid once the page is scrolled
 - Responsive mobile menu with `aria-expanded` state
 - Scrollspy that highlights the nav link for the section in view
@@ -30,6 +33,7 @@ Personal portfolio of **John Achadu (JohnnyMax)**, a full-stack JavaScript engin
 ├── index.html    Page markup and Tailwind theme config
 ├── style.css     Custom styles, animations, and component classes
 ├── script.js     Navbar, menu, scrollspy, typing effect, reveals, contact form
+├── scene.js      Three.js particle background (ES module)
 └── README.md
 ```
 
@@ -70,7 +74,8 @@ The site is static, so it can be deployed to Vercel with no configuration: impor
 
 - [x] Connect the contact form so messages are actually delivered
 - [x] Align project cards with my current work and CV
-- [ ] Add a Three.js particle background with reduced-motion and no-WebGL fallbacks
+- [x] Add a Three.js particle background with reduced-motion and no-WebGL fallbacks
+- [ ] Replace project links with individual repository and live-demo links
 - [ ] Deploy to Vercel
 
 ## Contact
