@@ -84,7 +84,7 @@ revealEls.forEach((el) => revealObserver.observe(el));
    Contact form: validation and delivery via Web3Forms
    ============================================ */
 const WEB3FORMS_ENDPOINT = "https://api.web3forms.com/submit";
-const WEB3FORMS_ACCESS_KEY = "PASTE_YOUR_WEB3FORMS_ACCESS_KEY_HERE";
+const WEB3FORMS_ACCESS_KEY = "1b058508-ed54-42b5-91d9-9ce6db56a138";
 const CONTACT_EMAIL = "graymatterthechampion@gmail.com";
 const REQUEST_TIMEOUT_MS = 15000;
 
