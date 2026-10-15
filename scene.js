@@ -36,6 +36,10 @@ const MOUNTAIN_ASPECT_COVER = 2.1;
 const MOUNTAIN_NOISE_SCALE = 0.28;
 const FOG_NEAR = 18;
 const FOG_FAR = 32;
+const PULSE_PERIOD_S = 7;
+const PULSE_REACH = 36;
+const PULSE_WIDTH = 1.8;
+const PULSE_COLOR = "#E6FFF7";
 const TAU = Math.PI * 2;
 
 
@@ -54,13 +58,25 @@ const vertexShader = `
   uniform float uSize;
   uniform float uFogNear;
   uniform float uFogFar;
+  uniform vec2 uPulseOrigin;
+  uniform float uPulsePeriod;
+  uniform float uPulseReach;
+  uniform float uPulseWidth;
 
   varying float vMix;
   varying float vFog;
+  varying float vPulse;
 
   void main() {
     vec3 p = position;
+    float heroHold = 1.0 - clamp(uProgress, 0.0, 1.0);
+    float cycle = fract(uTime / uPulsePeriod);
+    float ringDistance = distance(position.xz, uPulseOrigin);
+    float ring = exp(-pow((ringDistance - cycle * uPulseReach) / uPulseWidth, 2.0));
+    float pulse = ring * (1.0 - cycle) * heroHold;
     p.y += sin(uTime * 0.4) * 0.1;
+    p.y += pulse * 0.15;
+    p.y += sin(position.x * 0.25 + uTime * 0.3) * cos(position.z * 0.2 + uTime * 0.23) * 0.04 * heroHold;
     p = mix(p, aShape1, clamp(uProgress, 0.0, 1.0));
     p = mix(p, aShape2, clamp(uProgress - 1.0, 0.0, 1.0));
     p = mix(p, aShape3, clamp(uProgress - 2.0, 0.0, 1.0));
@@ -72,28 +88,33 @@ const vertexShader = `
 
     vec4 mvPosition = modelViewMatrix * vec4(p, 1.0);
     float depth = max(-mvPosition.z, 1.0);
-    gl_PointSize = uSize * aScale * uPixelRatio * pow(6.0 / depth, 0.5);
+    gl_PointSize = uSize * aScale * uPixelRatio * pow(6.0 / depth, 0.5) * (1.0 + pulse * 0.8);
     gl_Position = projectionMatrix * mvPosition;
     vMix = aMix;
     vFog = 1.0 - smoothstep(uFogNear, uFogFar, depth);
+    vPulse = pulse;
   }
 `;
 
 const fragmentShader = `
   uniform vec3 uColorA;
   uniform vec3 uColorB;
+  uniform vec3 uPulseColor;
   uniform float uOpacity;
 
   varying float vMix;
   varying float vFog;
+  varying float vPulse;
 
   void main() {
     float distanceFromCenter = length(gl_PointCoord - 0.5);
     if (distanceFromCenter > 0.5) {
       discard;
     }
-    float alpha = smoothstep(0.5, 0.1, distanceFromCenter) * uOpacity * vFog;
-    gl_FragColor = vec4(mix(uColorA, uColorB, vMix), alpha);
+    float glow = clamp(vPulse, 0.0, 1.0);
+    float alpha = smoothstep(0.5, 0.1, distanceFromCenter) * uOpacity * vFog * (1.0 + glow * 1.5);
+    vec3 baseColor = mix(uColorA, uColorB, vMix);
+    gl_FragColor = vec4(mix(baseColor, uPulseColor, glow), alpha);
     #include <colorspace_fragment>
   }
 `;
@@ -362,6 +383,17 @@ function envelopeShape(count, width, height) {
   return out;
 }
 
+function findHighestPoint(positions) {
+  let highest = 0;
+  const total = positions.length / 3;
+  for (let i = 1; i < total; i += 1) {
+    if (positions[i * 3 + 1] > positions[highest * 3 + 1]) {
+      highest = i;
+    }
+  }
+  return { x: positions[highest * 3], z: positions[highest * 3 + 2] };
+}
+
 function buildShapes(count) {
   return [
     mountainRange(count),
@@ -558,6 +590,7 @@ async function startScene() {
   camera.position.set(0, 0, CAMERA_DISTANCE);
 
   const shapes = buildShapes(count);
+  const pulseOrigin = findHighestPoint(shapes[0]);
   const geometry = new THREE.BufferGeometry();
   geometry.setAttribute("position", new THREE.BufferAttribute(shapes[0], 3));
   for (let s = 1; s < SHAPE_COUNT; s += 1) {
@@ -577,6 +610,11 @@ async function startScene() {
       uOpacity: { value: mobile ? OPACITY_MOBILE : OPACITY_DESKTOP },
       uFogNear: { value: FOG_NEAR },
       uFogFar: { value: FOG_FAR },
+      uPulseOrigin: { value: new THREE.Vector2(pulseOrigin.x, pulseOrigin.z) },
+      uPulsePeriod: { value: PULSE_PERIOD_S },
+      uPulseReach: { value: PULSE_REACH },
+      uPulseWidth: { value: PULSE_WIDTH },
+      uPulseColor: { value: new THREE.Color(PULSE_COLOR) },
       uColorA: { value: new THREE.Color(SIGNAL_COLOR) },
       uColorB: { value: new THREE.Color(VOLT_COLOR) },
     },
