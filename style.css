@@ -289,7 +289,7 @@ body {
 }
 
 @media (max-width: 640px) {
-  .skill-scatter {
+  .skill-cloud:not(.particles-on) .skill-scatter {
     position: static;
     display: flex;
     flex-wrap: wrap;
@@ -297,13 +297,17 @@ body {
     min-height: 0;
   }
 
-  .skill-chip {
+  .skill-cloud:not(.particles-on) .skill-chip {
     position: static;
     transform: none !important;
   }
 
-  .skill-chip:hover {
+  .skill-cloud:not(.particles-on) .skill-chip:hover {
     transform: scale(1.04) !important;
+  }
+
+  .skill-cloud.particles-on .skill-scatter {
+    min-height: 380px;
   }
 }
 

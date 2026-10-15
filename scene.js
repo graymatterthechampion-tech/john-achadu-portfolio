@@ -1,5 +1,5 @@
 const PARTICLE_COUNT_DESKTOP = 20000;
-const PARTICLE_COUNT_MOBILE = 6000;
+const PARTICLE_COUNT_MOBILE = 9000;
 const MOBILE_BREAKPOINT_PX = 768;
 const MAX_PIXEL_RATIO_DESKTOP = 2;
 const MAX_PIXEL_RATIO_MOBILE = 1.5;
@@ -636,6 +636,7 @@ async function startScene() {
   let targetProgress = computeTargetProgress(sections);
   let currentProgress = targetProgress;
   let frameId = 0;
+  let narrowScale = 1;
   let spinAngle = 0;
   let lastFrameTime = performance.now();
   let running = true;
@@ -650,8 +651,7 @@ async function startScene() {
     renderer.setSize(width, height, false);
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
-    const shapeScale = Math.min(Math.max(camera.aspect / NARROW_ASPECT, MIN_SHAPE_SCALE), 1);
-    points.scale.setScalar(shapeScale);
+    narrowScale = Math.min(Math.max(camera.aspect / NARROW_ASPECT, MIN_SHAPE_SCALE), 1);
     targetProgress = computeTargetProgress(sections);
   };
 
@@ -680,6 +680,7 @@ async function startScene() {
     const wrappedSpin = Math.atan2(Math.sin(spinAngle), Math.cos(spinAngle));
     points.rotation.y = (wrappedSpin + pointer.x * 0.25) * heroRelease;
     points.rotation.x = pointer.y * 0.15 * heroRelease;
+    points.scale.setScalar(1 + (narrowScale - 1) * heroRelease);
     meteorShower.update(elapsed, camera.aspect, 1 - Math.min(currentProgress, 1));
 
     renderer.render(scene, camera);

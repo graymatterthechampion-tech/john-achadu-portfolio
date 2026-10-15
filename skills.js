@@ -1,14 +1,12 @@
-const MIN_VIEWPORT_PX = 1024;
 const SAMPLE_STEP = 2;
-const LABEL_FONT_SIZE = 17;
-const LABEL_FONT = `600 ${LABEL_FONT_SIZE}px "JetBrains Mono", monospace`;
-const SCATTER_RADIUS = 70;
-const REVEAL_RADIUS = 130;
+const CANVAS_MARGIN = 60;
 const ASSEMBLE_SPEED = 2.6;
 const PARTICLE_LAG = 0.35;
 const DRIFT_AMPLITUDE = 7;
 const DOT_SIZE = 1.7;
 const FONT_WAIT_MS = 1500;
+const SPOTLIGHT_INTERVAL_MS = 1800;
+const TAP_HOLD_MS = 1600;
 const SCATTERED_RGB = [139, 124, 255];
 const ASSEMBLED_RGB = [92, 242, 192];
 
@@ -22,9 +20,21 @@ function smoothstep01(value) {
 }
 
 function canRunParticles() {
-  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const finePointer = window.matchMedia("(pointer: fine)").matches;
-  return !reducedMotion && finePointer && window.innerWidth >= MIN_VIEWPORT_PX;
+  return !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function isHoverless() {
+  return window.matchMedia("(hover: none)").matches;
+}
+
+function sizingFor(width) {
+  if (width < 480) {
+    return { fontSize: 13, scatterRadius: 42, revealRadius: 80 };
+  }
+  if (width < 760) {
+    return { fontSize: 15, scatterRadius: 56, revealRadius: 105 };
+  }
+  return { fontSize: 17, scatterRadius: 70, revealRadius: 130 };
 }
 
 function waitForFonts() {
@@ -37,18 +47,19 @@ function waitForFonts() {
   return Promise.race([document.fonts.ready, timeout]);
 }
 
-function sampleLabel(label) {
+function sampleLabel(label, fontSize) {
   const probe = document.createElement("canvas");
   const probeContext = probe.getContext("2d", { willReadFrequently: true });
   if (!probeContext) {
     return [];
   }
-  probeContext.font = LABEL_FONT;
+  const font = `600 ${fontSize}px "JetBrains Mono", monospace`;
+  probeContext.font = font;
   const width = Math.ceil(probeContext.measureText(label).width) + 4;
-  const height = Math.ceil(LABEL_FONT_SIZE * 1.6);
+  const height = Math.ceil(fontSize * 1.6);
   probe.width = width;
   probe.height = height;
-  probeContext.font = LABEL_FONT;
+  probeContext.font = font;
   probeContext.textBaseline = "middle";
   probeContext.fillStyle = "#ffffff";
   probeContext.fillText(label, 2, height / 2);
@@ -72,23 +83,37 @@ function readRotationRadians(chip) {
   return Number.isFinite(degrees) ? (degrees * Math.PI) / 180 : 0;
 }
 
-function buildWords(chips, canvasRect) {
+function clampBetween(value, min, max) {
+  if (min > max) {
+    return (min + max) / 2;
+  }
+  return Math.min(Math.max(value, min), max);
+}
+
+function buildWords(chips, canvasRect, sizing) {
   const words = [];
   for (const chip of chips) {
     const label = chip.textContent.replace(/\s+/g, " ").trim();
     if (label.length === 0) {
       continue;
     }
+    const points = sampleLabel(label, sizing.fontSize);
+    if (points.length === 0) {
+      continue;
+    }
+    const halfWidth = points.reduce((widest, point) => Math.max(widest, Math.abs(point.x)), 0);
+
     const chipRect = chip.getBoundingClientRect();
-    const centerX = chipRect.left + chipRect.width / 2 - canvasRect.left;
+    const rawCenterX = chipRect.left + chipRect.width / 2 - canvasRect.left;
+    const centerX = clampBetween(rawCenterX, CANVAS_MARGIN + halfWidth, canvasRect.width - CANVAS_MARGIN - halfWidth);
     const centerY = chipRect.top + chipRect.height / 2 - canvasRect.top;
     const rotation = readRotationRadians(chip);
     const cos = Math.cos(rotation);
     const sin = Math.sin(rotation);
 
-    const particles = sampleLabel(label).map((point) => {
+    const particles = points.map((point) => {
       const angle = Math.random() * Math.PI * 2;
-      const radius = SCATTER_RADIUS * Math.sqrt(Math.random());
+      const radius = sizing.scatterRadius * Math.sqrt(Math.random());
       return {
         targetX: centerX + point.x * cos - point.y * sin,
         targetY: centerY + point.x * sin + point.y * cos,
@@ -128,12 +153,21 @@ function startSkillParticles() {
   }
 
   let words = [];
+  let sizing = sizingFor(0);
   let pointerX = Number.NaN;
   let pointerY = Number.NaN;
+  let tapHoldUntil = 0;
+  let spotlightIndex = 0;
+  let nextSpotlightAt = performance.now() + SPOTLIGHT_INTERVAL_MS;
   let frameId = 0;
   let running = false;
   let lastTime = performance.now();
   let rebuildTimer = 0;
+
+  const clearPointer = () => {
+    pointerX = Number.NaN;
+    pointerY = Number.NaN;
+  };
 
   const rebuild = () => {
     const rect = canvas.getBoundingClientRect();
@@ -144,13 +178,25 @@ function startSkillParticles() {
     canvas.width = Math.round(rect.width * ratio);
     canvas.height = Math.round(rect.height * ratio);
     context.setTransform(ratio, 0, 0, ratio, 0, 0);
-    words = buildWords(chips, rect);
+    sizing = sizingFor(rect.width - CANVAS_MARGIN * 2);
+    words = buildWords(chips, rect, sizing);
+    spotlightIndex = 0;
   };
 
   const drawFrame = (now) => {
     const deltaSeconds = Math.min((now - lastTime) / 1000, 0.1);
     lastTime = now;
     const elapsed = now / 1000;
+    const hoverless = isHoverless();
+
+    if (hoverless && now > tapHoldUntil) {
+      clearPointer();
+    }
+    if (hoverless && now >= nextSpotlightAt && words.length > 0) {
+      spotlightIndex = (spotlightIndex + 1) % words.length;
+      nextSpotlightAt = now + SPOTLIGHT_INTERVAL_MS;
+    }
+
     const rect = canvas.getBoundingClientRect();
     const localPointerX = pointerX - rect.left;
     const localPointerY = pointerY - rect.top;
@@ -158,10 +204,12 @@ function startSkillParticles() {
 
     context.clearRect(0, 0, rect.width, rect.height);
 
-    for (const word of words) {
-      const near = hasPointer && Math.hypot(localPointerX - word.centerX, localPointerY - word.centerY) < REVEAL_RADIUS;
+    words.forEach((word, index) => {
+      const pointerNear =
+        hasPointer && Math.hypot(localPointerX - word.centerX, localPointerY - word.centerY) < sizing.revealRadius;
+      const spotlit = hoverless && !hasPointer && index === spotlightIndex;
       const step = ASSEMBLE_SPEED * deltaSeconds;
-      word.progress = clamp01(word.progress + (near ? step : -step));
+      word.progress = clamp01(word.progress + (pointerNear || spotlit ? step : -step));
 
       const red = mixChannel(SCATTERED_RGB[0], ASSEMBLED_RGB[0], word.progress);
       const green = mixChannel(SCATTERED_RGB[1], ASSEMBLED_RGB[1], word.progress);
@@ -178,7 +226,7 @@ function startSkillParticles() {
         context.globalAlpha = 0.45 + 0.55 * local;
         context.fillRect(x, y, DOT_SIZE, DOT_SIZE);
       }
-    }
+    });
     context.globalAlpha = 1;
   };
 
@@ -208,25 +256,33 @@ function startSkillParticles() {
     (event) => {
       pointerX = event.clientX;
       pointerY = event.clientY;
+      if (event.pointerType !== "mouse") {
+        tapHoldUntil = performance.now() + TAP_HOLD_MS;
+      }
     },
     { passive: true },
   );
-  document.documentElement.addEventListener("pointerleave", () => {
-    pointerX = Number.NaN;
-    pointerY = Number.NaN;
+  window.addEventListener(
+    "pointerdown",
+    (event) => {
+      pointerX = event.clientX;
+      pointerY = event.clientY;
+      if (event.pointerType !== "mouse") {
+        tapHoldUntil = performance.now() + TAP_HOLD_MS;
+      }
+    },
+    { passive: true },
+  );
+  document.documentElement.addEventListener("pointerleave", (event) => {
+    if (event.pointerType === "mouse") {
+      clearPointer();
+    }
   });
 
   window.addEventListener("resize", () => {
     window.clearTimeout(rebuildTimer);
     rebuildTimer = window.setTimeout(() => {
-      if (!canRunParticles()) {
-        setRunning(false);
-        cloud.classList.remove("particles-on");
-        return;
-      }
-      cloud.classList.add("particles-on");
       rebuild();
-      setRunning(true);
     }, 200);
   });
 
