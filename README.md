@@ -15,7 +15,9 @@ Personal portfolio of **John Achadu (JohnnyMax)**, a full-stack JavaScript engin
 
 ## Features
 
-- Scroll-driven 3D particle background that morphs into a new shape for each section: a data wave, a globe, a lattice cube, a node network, a double helix, and an envelope
+- Scroll-driven 3D particle background that morphs into a new shape for each section: a jagged mountain range, a globe, a lattice cube, a node network, a double helix, and an envelope
+- Hero sky with a floating mountain range and shooting stars that streak in from both sides
+- Tech-stack "particle cloud": each skill drifts as scattered dust and assembles into its name when the cursor comes near (desktop); phones and reduced-motion users get plain floating chips
 - The 3D layer downloads only on devices that can show it: it is skipped for reduced-motion users, devices without WebGL2, and if the CDN fails, leaving the rest of the site untouched
 - Navbar that turns solid once the page is scrolled
 - Responsive mobile menu with `aria-expanded` state
@@ -34,6 +36,7 @@ Personal portfolio of **John Achadu (JohnnyMax)**, a full-stack JavaScript engin
 ├── style.css     Custom styles, animations, and component classes
 ├── script.js     Navbar, menu, scrollspy, typing effect, reveals, contact form
 ├── scene.js      Three.js particle background (ES module)
+├── skills.js     Hover-to-assemble skill particles on a 2D canvas (ES module)
 └── README.md
 ```
 

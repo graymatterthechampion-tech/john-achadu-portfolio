@@ -61,50 +61,6 @@ const spyObserver = new IntersectionObserver(
 sections.forEach((section) => spyObserver.observe(section));
 
 /* ============================================
-   Hero terminal: typing effect cycling roles
-   ============================================ */
-const roles = [
-  "Full Stack JavaScript Engineer",
-  "React & Redux Developer",
-  "Node.js / Express API Builder",
-  "Trader-turned-Software Engineer",
-];
-
-const typedEl = document.getElementById("typedRole");
-let roleIndex = 0;
-let charIndex = 0;
-let isDeleting = false;
-
-function typeLoop() {
-  const current = roles[roleIndex];
-
-  if (isDeleting) {
-    charIndex--;
-  } else {
-    charIndex++;
-  }
-
-  typedEl.textContent = current.slice(0, charIndex);
-
-  let delay = isDeleting ? 35 : 65;
-
-  if (!isDeleting && charIndex === current.length) {
-    delay = 1400;
-    isDeleting = true;
-  } else if (isDeleting && charIndex === 0) {
-    isDeleting = false;
-    roleIndex = (roleIndex + 1) % roles.length;
-    delay = 300;
-  }
-
-  window.setTimeout(typeLoop, delay);
-}
-
-if (typedEl) {
-  typeLoop();
-}
-
-/* ============================================
    Scroll reveal animations
    ============================================ */
 const revealEls = document.querySelectorAll("[data-reveal]");

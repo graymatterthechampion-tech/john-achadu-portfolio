@@ -1,4 +1,4 @@
-const PARTICLE_COUNT_DESKTOP = 9000;
+const PARTICLE_COUNT_DESKTOP = 12000;
 const PARTICLE_COUNT_MOBILE = 4000;
 const MOBILE_BREAKPOINT_PX = 768;
 const MAX_PIXEL_RATIO_DESKTOP = 2;
@@ -28,7 +28,10 @@ const CAMERA_FOV = 50;
 const MOUNTAIN_OCTAVES = 5;
 const MOUNTAIN_HEIGHT = 2.6;
 const MOUNTAIN_TILT = 0.3;
-const CAMERA_DISTANCE = 6;
+const CAMERA_DISTANCE = 8.5;
+const MOUNTAIN_WIDTH = 16;
+const MOUNTAIN_DEPTH = 6;
+const MOUNTAIN_BASE = -3.1;
 const TAU = Math.PI * 2;
 
 
@@ -174,14 +177,14 @@ function mountainRange(count) {
   const maxAttempts = count * 20;
   while (placed < count) {
     attempts += 1;
-    const x = (Math.random() - 0.5) * 10;
-    const z = (Math.random() - 0.5) * 5;
+    const x = (Math.random() - 0.5) * MOUNTAIN_WIDTH;
+    const z = (Math.random() - 0.5) * MOUNTAIN_DEPTH;
     const h = ridgedHeight(x + 3.7, z + 1.3);
     const keepChance = 0.06 + h * h * h * 3;
     if (attempts < maxAttempts && Math.random() > keepChance) {
       continue;
     }
-    setPoint(out, placed, x, h * MOUNTAIN_HEIGHT - 2.2 - z * MOUNTAIN_TILT, z);
+    setPoint(out, placed, x, h * MOUNTAIN_HEIGHT + MOUNTAIN_BASE - z * MOUNTAIN_TILT, z);
     placed += 1;
   }
   return out;
@@ -450,10 +453,13 @@ function createMeteorShower(THREE, pixelRatio) {
     const angle = randomBetween(0.5, 0.9);
     meteor.active = true;
     meteor.startTime = elapsed;
-    meteor.startX = randomBetween(-view.width / 2 - 0.5, view.width / 4);
+    const fromLeft = Math.random() < 0.5;
+    meteor.startX = fromLeft
+      ? randomBetween(-view.width / 2 - 0.5, -view.width / 6)
+      : randomBetween(view.width / 6, view.width / 2 + 0.5);
     meteor.startY = randomBetween(view.height * 0.2, view.height / 2 + 0.3);
     meteor.startZ = randomBetween(-1.5, 0.5);
-    meteor.dirX = Math.cos(angle);
+    meteor.dirX = fromLeft ? Math.cos(angle) : -Math.cos(angle);
     meteor.dirY = -Math.sin(angle);
   };
 

@@ -136,43 +136,26 @@
         </div>
       </div>
 
-      <!-- Right: terminal -->
+      <!-- Right: skill particles -->
       <div data-reveal data-reveal-delay="150">
-        <div class="terminal-window">
-          <div class="terminal-titlebar">
-            <span class="dot" style="background:#FF5F57"></span>
-            <span class="dot" style="background:#FEBC2E"></span>
-            <span class="dot" style="background:#28C840"></span>
-            <span class="font-mono text-[11px] text-mist ml-3">JohnnyMax:~</span>
+        <div class="skill-cloud">
+          <canvas class="skill-particles" aria-hidden="true"></canvas>
+          <div class="skill-scatter" aria-label="Skills">
+            <span class="skill-chip" style="top:9%; left:14%; --rot:-9deg;"><i class="devicon-javascript-plain colored"></i>JavaScript</span>
+            <span class="skill-chip" style="top:6%; left:50%; --rot:7deg;"><i class="devicon-html5-plain colored"></i>HTML5</span>
+            <span class="skill-chip" style="top:16%; left:83%; --rot:-5deg;"><i class="devicon-css3-plain colored"></i>CSS3</span>
+            <span class="skill-chip" style="top:36%; left:30%; --rot:10deg;"><i class="devicon-typescript-plain colored"></i>TypeScript</span>
+            <span class="skill-chip" style="top:42%; left:7%; --rot:-6deg;"><i class="devicon-react-original colored"></i>React</span>
+            <span class="skill-chip" style="top:47%; left:63%; --rot:-11deg;"><i class="devicon-redux-original colored"></i>Redux</span>
+            <span class="skill-chip" style="top:60%; left:16%; --rot:6deg;"><i class="devicon-nodejs-plain colored"></i>Node.js</span>
+            <span class="skill-chip" style="top:68%; left:46%; --rot:-4deg;"><i class="devicon-express-original"></i>Express</span>
+            <span class="skill-chip" style="top:30%; left:73%; --rot:5deg;"><span class="chip-glyph">⇄</span>REST API</span>
+            <span class="skill-chip" style="top:80%; left:70%; --rot:9deg;"><i class="devicon-mongodb-plain colored"></i>MongoDB</span>
+            <span class="skill-chip" style="top:86%; left:32%; --rot:-7deg;"><i class="devicon-mysql-plain colored"></i>MySQL</span>
+            <span class="skill-chip" style="top:62%; left:87%; --rot:4deg;"><i class="devicon-postgresql-plain colored"></i>PostgreSQL</span>
+            <span class="skill-chip" style="bottom:8%; left:8%; --rot:5deg;"><i class="devicon-python-plain colored"></i>Python</span>
           </div>
-          <div class="terminal-body font-mono text-sm leading-relaxed">
-            <p><span class="text-signal">$</span> whoami</p>
-            <p id="typedRole" class="text-paper min-h-[1.5em]"></p>
-            <p class="mt-4"><span class="text-signal">$</span> ls ./skills</p>
-
-            <div class="skill-scatter" aria-label="Skills">
-                    <!-- Right: floating skills -->
-      <div data-reveal data-reveal-delay="150">
-        <div class="skill-scatter skill-cloud" aria-label="Skills">
-          <span class="skill-chip" style="top:9%; left:14%; --rot:-9deg;"><i class="devicon-javascript-plain colored"></i>JavaScript</span>
-          <span class="skill-chip" style="top:6%; left:50%; --rot:7deg;"><i class="devicon-html5-plain colored"></i>HTML5</span>
-          <span class="skill-chip" style="top:16%; left:83%; --rot:-5deg;"><i class="devicon-css3-plain colored"></i>CSS3</span>
-          <span class="skill-chip" style="top:36%; left:30%; --rot:10deg;"><i class="devicon-typescript-plain colored"></i>TypeScript</span>
-          <span class="skill-chip" style="top:42%; left:7%; --rot:-6deg;"><i class="devicon-react-original colored"></i>React</span>
-          <span class="skill-chip" style="top:47%; left:63%; --rot:-11deg;"><i class="devicon-redux-original colored"></i>Redux</span>
-          <span class="skill-chip" style="top:60%; left:16%; --rot:6deg;"><i class="devicon-nodejs-plain colored"></i>Node.js</span>
-          <span class="skill-chip" style="top:68%; left:46%; --rot:-4deg;"><i class="devicon-express-original"></i>Express</span>
-          <span class="skill-chip" style="top:30%; left:73%; --rot:5deg;"><span class="chip-glyph">⇄</span>REST API</span>
-          <span class="skill-chip" style="top:80%; left:70%; --rot:9deg;"><i class="devicon-mongodb-plain colored"></i>MongoDB</span>
-          <span class="skill-chip" style="top:86%; left:32%; --rot:-7deg;"><i class="devicon-mysql-plain colored"></i>MySQL</span>
-          <span class="skill-chip" style="top:62%; left:87%; --rot:4deg;"><i class="devicon-postgresql-plain colored"></i>PostgreSQL</span>
-          <span class="skill-chip" style="bottom:8%; left:8%; --rot:5deg;"><i class="devicon-python-plain colored"></i>Python</span>
-        </div>
-      </div>
-            </div>
- 
-            <p class="mt-2"><span class="text-signal">$</span> <span class="typed-cursor">▌</span></p>
-          </div>
+          <p class="skill-hint" aria-hidden="true">// hover to assemble the stack</p>
         </div>
       </div>
 
@@ -507,5 +490,6 @@
 
 <script src="script.js"></script>
 <script type="module" src="scene.js"></script>
+<script type="module" src="skills.js"></script>
 </body>
 </html>

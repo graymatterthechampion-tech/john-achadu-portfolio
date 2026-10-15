@@ -174,47 +174,6 @@ body {
 }
 
 /* ============================================
-   Terminal window (hero signature element)
-   ============================================ */
-.terminal-window {
-  background: #14171C;
-  border: 1px solid #262B33;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.7);
-}
-
-.terminal-titlebar {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 0.85rem 1rem;
-  background: #191D23;
-  border-bottom: 1px solid #262B33;
-}
-
-.terminal-titlebar .dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 999px;
-  display: inline-block;
-}
-
-.terminal-body {
-  padding: 1.75rem;
-  min-height: 280px;
-}
-
-.typed-cursor {
-  display: inline-block;
-  animation: blink 1s step-end infinite;
-}
-
-@keyframes blink {
-  50% { opacity: 0; }
-}
-
-/* ============================================
    Scattered skill chips (hero)
    ============================================ */
 .skill-scatter {
@@ -260,20 +219,16 @@ body {
   z-index: 10;
 }
 
-.skill-cloud {
-  min-height: 440px;
-}
-
-.skill-cloud .skill-chip {
+.skill-scatter .skill-chip {
   animation: chip-float 6s ease-in-out infinite;
 }
 
-.skill-cloud .skill-chip:nth-child(2n) {
+.skill-scatter .skill-chip:nth-child(2n) {
   animation-duration: 7.5s;
-  animation-delay: -2s
+  animation-delay: -2s;
 }
 
-.skill-cloud .skill-chip:nth-child(3n) {
+.skill-scatter .skill-chip:nth-child(3n) {
   animation-duration: 5.2s;
   animation-delay: -4s;
 }
@@ -288,6 +243,50 @@ body {
   }
 }
 
+.skill-cloud {
+  position: relative;
+}
+
+.skill-particles {
+  position: absolute;
+  top: -60px;
+  left: -60px;
+  width: calc(100% + 120px);
+  height: calc(100% + 120px);
+  pointer-events: none;
+  display: none;
+}
+
+.skill-hint {
+  display: none;
+  margin-top: 1rem;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #9AA1AC;
+  text-align: center;
+}
+
+.skill-cloud.particles-on .skill-particles {
+  display: block;
+}
+
+.skill-cloud.particles-on .skill-hint {
+  display: block;
+}
+
+.skill-cloud.particles-on .skill-chip {
+  opacity: 0;
+  animation: none;
+  pointer-events: none;
+}
+
+@media (min-width: 641px) {
+  .skill-cloud .skill-scatter {
+    min-height: 440px;
+  }
+}
 
 @media (max-width: 640px) {
   .skill-scatter {
