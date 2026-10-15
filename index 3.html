@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>JohnnyMax — Full Stack JavaScript Engineer</title>
+<meta name="description" content="Portfolio of JohnnyMax (JohnnyMax), a full stack JavaScript engineer building web apps and automation tools from Lagos, Nigeria." />
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Rubik+Spray+Paint&display=swap" rel="stylesheet">
+
+<!-- Tech icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@2.16.0/devicon.min.css" />
+
+<!-- Tailwind (CDN, config extended below) -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          ink: "#0B0D10",
+          panel: "#14171C",
+          panel2: "#191D23",
+          hairline: "#262B33",
+          paper: "#F2F1EC",
+          mist: "#9AA1AC",
+          signal: "#5CF2C0",
+          volt: "#8B7CFF",
+        },
+        fontFamily: {
+          display: ["'Black Ops One'", "cursive"],
+          spray: ["'Rubik Spray Paint'", "cursive"],
+          body: ["Arial", "sans-serif"],
+          mono: ["monospace"],
+        },
+      },
+    },
+  };
+</script>
+</script>
+
+<link rel="stylesheet" href="style.css"/>
+</head>
+
+<body class="bg-ink text-paper font-body antialiased">
+
+<!-- ============ GRAIN / NOISE OVERLAY ============ -->
+<div class="noise-overlay" aria-hidden="true"></div>
+
+<!-- ============ NAVBAR ============ -->
+<header id="navbar" class="fixed top-0 inset-x-0 z-50 transition-all duration-300">
+  <nav class="max-w-7xl mx-auto flex items-center justify-between px-6 md:px-10 py-5">
+    <a href="#top" class="font-display font-semibold text-lg tracking-tight text-paper">
+      <span class="text-signal">&lt;</span>John<span class="text-mist">.dev</span><span class="text-signal">/&gt;</span>
+    </a>
+
+    <ul class="hidden md:flex items-center gap-10 font-mono text-xs uppercase tracking-widest text-mist">
+      <li><a href="#about" class="nav-link" data-nav>About</a></li>
+      <li><a href="#skills" class="nav-link" data-nav>Skills</a></li>
+      <li><a href="#work" class="nav-link" data-nav>Work</a></li>
+      <li><a href="#journey" class="nav-link" data-nav>Journey</a></li>
+      <li><a href="#contact" class="nav-link" data-nav>Contact</a></li>
+    </ul>
+
+    <a href="#contact" class="hidden md:inline-flex items-center gap-2 border border-hairline hover:border-signal hover:text-signal transition-colors px-5 py-2.5 font-mono text-xs uppercase tracking-widest">
+      Let's talk
+    </a>
+
+    <button id="menuBtn" class="md:hidden text-paper" aria-label="Open menu" aria-expanded="false">
+      <span class="block w-6 h-[2px] bg-paper mb-1.5"></span>
+      <span class="block w-6 h-[2px] bg-paper mb-1.5"></span>
+      <span class="block w-4 h-[2px] bg-paper"></span>
+    </button>
+  </nav>
+
+  <!-- Mobile menu -->
+  <div id="mobileMenu" class="md:hidden hidden bg-panel border-t border-hairline">
+    <ul class="flex flex-col px-6 py-6 gap-5 font-mono text-sm uppercase tracking-widest text-mist">
+      <li><a href="#about" data-nav class="block">About</a></li>
+      <li><a href="#skills" data-nav class="block">Skills</a></li>
+      <li><a href="#work" data-nav class="block">Work</a></li>
+      <li><a href="#journey" data-nav class="block">Journey</a></li>
+      <li><a href="#contact" data-nav class="block text-signal">Contact</a></li>
+    </ul>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ============ HERO ============ -->
+  <section class="relative min-h-screen flex items-center pt-32 pb-20 px-6 md:px-10 overflow-hidden">
+    <div class="hero-glow" aria-hidden="true"></div>
+
+    <div class="max-w-7xl mx-auto w-full grid lg:grid-cols-[1.1fr_0.9fr] gap-16 items-center relative z-10">
+
+      <!-- Left: intro -->
+      <div data-reveal>
+        <p class="font-mono text-signal text-xs uppercase tracking-[0.3em] mb-6">
+          Based in Lagos, Nigeria — Open to remote work
+        </p>
+        <h1 class="font-display font-semibold leading-[1.02] text-5xl sm:text-6xl lg:text-7xl tracking-tight">
+          JohnnyMax
+        </h1>
+        <p class="font-display text-2xl sm:text-3xl text-mist mt-4">
+          Full&nbsp;Stack JavaScript Engineer
+        </p>
+        <p class="text-mist text-base sm:text-lg leading-relaxed mt-6 max-w-xl">
+          I build web applications end to end — from React interfaces to Node/Express
+          APIs backed by SQL and NoSQL databases. Currently sharpening my craft at
+          GoMyCode while shipping real tools like a production bulk-email platform,
+          with an eye on infrastructure for the African market.
+        </p>
+
+        <div class="flex flex-wrap items-center gap-4 mt-10">
+          <a href="#work" class="btn-solid">View my work</a>
+          <a href="#contact" class="btn-ghost">Get in touch</a>
+        </div>
+
+        <div class="flex items-center gap-6 mt-12">
+          <a href="https://github.com/graymatterthechampion-tech" target="_blank" rel="noopener" class="social-link" aria-label="GitHub">
+            <i class="devicon-github-original"></i>
+          </a>
+          <a href="#" target="_blank" rel="noopener" class="social-link" aria-label="LinkedIn">
+            <i class="devicon-linkedin-plain"></i>
+          </a>
+          <a href="mailto:graymatterthechampion@gmail.com" class="social-link" aria-label="Email">
+            <i class="devicon-google-plain" style="display:none"></i>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 h-5 fill-current"><path d="M2 5.5A2.5 2.5 0 0 1 4.5 3h15A2.5 2.5 0 0 1 22 5.5v13a2.5 2.5 0 0 1-2.5 2.5h-15A2.5 2.5 0 0 1 2 18.5v-13Zm2.2.3 7.6 6.1a.5.5 0 0 0 .4 0l7.6-6.1H4.2Zm15.8 1.4-7.36 5.9a2.5 2.5 0 0 1-3.28 0L4 7.2v11.3c0 .28.22.5.5.5h15c.28 0 .5-.22.5-.5V7.2Z"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Right: terminal -->
+      <div data-reveal data-reveal-delay="150">
+        <div class="terminal-window">
+          <div class="terminal-titlebar">
+            <span class="dot" style="background:#FF5F57"></span>
+            <span class="dot" style="background:#FEBC2E"></span>
+            <span class="dot" style="background:#28C840"></span>
+            <span class="font-mono text-[11px] text-mist ml-3">JohnnyMax:~</span>
+          </div>
+          <div class="terminal-body font-mono text-sm leading-relaxed">
+            <p><span class="text-signal">$</span> whoami</p>
+            <p id="typedRole" class="text-paper min-h-[1.5em]"></p>
+            <p class="mt-4"><span class="text-signal">$</span> ls ./skills</p>
+
+            <div class="skill-scatter" aria-label="Skills">
+              <span class="skill-chip" style="top:9%; left:14%; --rot:-9deg;"><i class="devicon-javascript-plain colored"></i>JavaScript</span>
+              <span class="skill-chip" style="top:6%; left:50%; --rot:7deg;"><i class="devicon-html5-plain colored"></i>HTML5</span>
+              <span class="skill-chip" style="top:16%; left:83%; --rot:-5deg;"><i class="devicon-css3-plain colored"></i>CSS3</span>
+              <span class="skill-chip" style="top:36%; left:30%; --rot:10deg;"><i class="devicon-typescript-plain colored"></i>TypeScript</span>
+              <span class="skill-chip" style="top:42%; left:7%; --rot:-6deg;"><i class="devicon-react-original colored"></i>React</span>
+              <span class="skill-chip" style="top:47%; left:63%; --rot:-11deg;"><i class="devicon-redux-original colored"></i>Redux</span>
+              <span class="skill-chip" style="top:60%; left:16%; --rot:6deg;"><i class="devicon-nodejs-plain colored"></i>Node.js</span>
+              <span class="skill-chip" style="top:68%; left:46%; --rot:-4deg;"><i class="devicon-express-original"></i>Express</span>
+              <span class="skill-chip" style="top:30%; left:73%; --rot:5deg;"><span class="chip-glyph">⇄</span>REST API</span>
+              <span class="skill-chip" style="top:80%; left:70%; --rot:9deg;"><i class="devicon-mongodb-plain colored"></i>MongoDB</span>
+              <span class="skill-chip" style="top:86%; left:32%; --rot:-7deg;"><i class="devicon-mysql-plain colored"></i>MySQL</span>
+              <span class="skill-chip" style="top:62%; left:87%; --rot:4deg;"><i class="devicon-postgresql-plain colored"></i>PostgreSQL</span>
+              <span class="skill-chip" style="bottom:8%; left:8%; --rot:5deg;"><i class="devicon-python-plain colored"></i>Python</span>"
+            </div>
+ 
+            <p class="mt-2"><span class="text-signal">$</span> <span class="typed-cursor">▌</span></p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ ABOUT ============ -->
+  <section id="about" class="px-6 md:px-10 py-28 border-t border-hairline">
+    <div class="max-w-7xl mx-auto grid lg:grid-cols-[0.4fr_0.6fr] gap-16">
+      <div data-reveal>
+        <p class="eyebrow">About</p>
+        <h2 class="section-title">From trading screens<br />to production servers.</h2>
+      </div>
+      <div data-reveal data-reveal-delay="100" class="space-y-6 text-mist text-lg leading-relaxed">
+        <p>
+          I came into software engineering through a trader's mindset — comfortable with
+          risk, allergic to guesswork, and obsessed with systems that actually work under
+          pressure. That instinct now shows up in how I build: I ship real, working
+          products first, then iterate.
+        </p>
+        <p>
+          My most recent build is a production bulk-email marketing platform — complete
+          with authentication, a sending-address manager, and a Postgres database on
+          Neon — deployed and running end to end. Alongside that, I'm working through a
+          full-stack JavaScript curriculum at GoMyCode, moving from fundamentals through
+          the DOM, ES6 and into React.
+        </p>
+        <div class="grid sm:grid-cols-2 gap-6 pt-6">
+          <div class="stat-card">
+            <p class="font-mono text-signal text-xs uppercase tracking-widest">Focus</p>
+            <p class="text-paper mt-2">Full-stack JavaScript &amp; automation tooling</p>
+          </div>
+          <div class="stat-card">
+            <p class="font-mono text-signal text-xs uppercase tracking-widest">Currently</p>
+            <p class="text-paper mt-2">GoMyCode full-stack program</p>
+          </div>
+          <div class="stat-card">
+            <p class="font-mono text-signal text-xs uppercase tracking-widest">Based in</p>
+            <p class="text-paper mt-2">Lagos, Nigeria</p>
+          </div>
+          <div class="stat-card">
+            <p class="font-mono text-signal text-xs uppercase tracking-widest">Availability</p>
+            <p class="text-paper mt-2">Open to remote &amp; freelance work</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SKILLS ============ -->
+  <section id="skills" class="px-6 md:px-10 py-28 border-t border-hairline bg-panel/40">
+    <div class="max-w-7xl mx-auto">
+      <div data-reveal class="max-w-2xl mb-16">
+        <p class="eyebrow">Skills</p>
+        <h2 class="section-title">The stack I build with.</h2>
+        <p class="text-mist text-lg mt-4">
+          Tools I reach for daily across the front end, back end, and data layer —
+          rated by how deep my hands-on experience goes right now.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-8">
+
+        <!-- Frontend -->
+        <div data-reveal class="skill-group">
+          <h3 class="font-mono text-xs uppercase tracking-widest text-signal mb-6">01 — Frontend</h3>
+          <ul class="space-y-5">
+            <li class="skill-item">
+              <i class="devicon-html5-plain colored"></i>
+              <div class="flex-1"><p>HTML5</p><div class="skill-bar"><span style="width:92%"></span></div></div>
+            </li>
+            <li class="skill-item">
+              <i class="devicon-css3-plain colored"></i>
+              <div class="flex-1"><p>CSS3</p><div class="skill-bar"><span style="width:88%"></span></div></div>
+            </li>
+            <li class="skill-item">
+              <i class="devicon-javascript-plain colored"></i>
+              <div class="flex-1"><p>JavaScript</p><div class="skill-bar"><span style="width:85%"></span></div></div>
+            </li>
+            <li class="skill-item">
+              <i class="devicon-react-original colored"></i>
+              <div class="flex-1"><p>React</p><div class="skill-bar"><span style="width:70%"></span></div></div>
+            </li>
+            <li class="skill-item">
+              <i class="devicon-redux-original colored"></i>
+              <div class="flex-1"><p>Redux</p><div class="skill-bar"><span style="width:60%"></span></div></div>
+            </li>
+            <li class="skill-item">
+              <i class="devicon-typescript-plain colored"></i>
+              <div class="flex-1"><p>TypeScript</p><div class="skill-bar"><span style="width:55%"></span></div></div>
+            </li>
+            <li class="skill-item">
+              <i class="devicon-python-plain colored"></i>
+              <div class="flex-1"><p>Python</p><div class="skill-bar"><span style="width:20%"></span></div></div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Backend -->
+        <div data-reveal data-reveal-delay="100" class="skill-group">
+          <h3 class="font-mono text-xs uppercase tracking-widest text-signal mb-6">02 — Backend</h3>
+          <ul class="space-y-5">
+            <li class="skill-item">
+              <i class="devicon-nodejs-plain colored"></i>
+              <div class="flex-1"><p>Node.js</p><div class="skill-bar"><span style="width:78%"></span></div></div>
+            </li>
+            <li class="skill-item">
+              <i class="devicon-express-original"></i>
+              <div class="flex-1"><p>Express</p><div class="skill-bar"><span style="width:75%"></span></div></div>
+            </li>
+            <li class="skill-item">
+              <i class="devicon-nodejs-plain-wordmark" style="opacity:.001"></i>
+              <span class="rest-icon">API</span>
+              <div class="flex-1"><p>REST APIs</p><div class="skill-bar"><span style="width:80%"></span></div></div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Databases -->
+        <div data-reveal data-reveal-delay="200" class="skill-group">
+          <h3 class="font-mono text-xs uppercase tracking-widest text-signal mb-6">03 — Databases</h3>
+          <ul class="space-y-5">
+            <li class="skill-item">
+              <i class="devicon-mongodb-plain colored"></i>
+              <div class="flex-1"><p>MongoDB</p><div class="skill-bar"><span style="width:65%"></span></div></div>
+            </li>
+            <li class="skill-item">
+              <i class="devicon-mysql-plain colored"></i>
+              <div class="flex-1"><p>MySQL</p><div class="skill-bar"><span style="width:68%"></span></div></div>
+            </li>
+            <li class="skill-item">
+              <i class="devicon-postgresql-plain colored"></i>
+              <div class="flex-1"><p>PostgreSQL</p><div class="skill-bar"><span style="width:72%"></span></div></div>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ WORK / PROJECTS ============ -->
+  <section id="work" class="px-6 md:px-10 py-28 border-t border-hairline">
+    <div class="max-w-7xl mx-auto">
+      <div data-reveal class="max-w-2xl mb-16">
+        <p class="eyebrow">Selected work</p>
+        <h2 class="section-title">Things I've shipped.</h2>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-8">
+
+        <article data-reveal class="project-card">
+          <div 
+          class="project-media grad-1 bg-cover bg-center"
+          style="background-image: url(https://media.istockphoto.com/id/1282806068/photo/email-marketing-concept-person-reading-e-mail-on-smartphone.webp?a=1&b=1&s=612x612&w=0&k=20&c=ZSdws2bhyJStwpN1-Is8iIV_Z7rFEafNz7lJrDdoMTs=);">
+          <span class="font-mono text-xs text-paper uppercase tracking-widest">
+            01/live product
+          </span>
+          </div>
+          </div>
+          <div class="p-8">
+            <h3 class="font-display text-2xl">BulkMail — Email Marketing Platform</h3>
+            <p class="text-mist mt-3 leading-relaxed">
+              A full-stack bulk email sender with authentication, a sending-address
+              manager, and a Postgres (Neon) database — deployed on Render with
+              confirmed end-to-end delivery.
+            </p>
+            <ul class="flex flex-wrap gap-2 mt-5 font-mono text-[11px] uppercase tracking-widest">
+              <li class="tag">Node.js</li><li class="tag">Express</li><li class="tag">PostgreSQL</li><li class="tag">Auth</li>
+            </ul>
+            <div class="flex gap-6 mt-6 font-mono text-xs uppercase tracking-widest">
+              <a href="#" class="link-underline">Live demo</a>
+              <a href="https://github.com/graymatterthechampion-tech" target="_blank" rel="noopener" class="link-underline">Source</a>
+              
+            </div>
+          </div>
+        </article>
+
+        <article data-reveal data-reveal-delay="100" class="project-card">
+          <div class="project-media grad-2">
+            <span class="font-mono text-xs text-ink/70 uppercase tracking-widest">02 / Personal site</span>
+          </div>
+          <div class="p-8">
+            <h3 class="font-display text-2xl">Developer Portfolio</h3>
+            <p class="text-mist mt-3 leading-relaxed">
+              A hand-built portfolio covering CSS animations, Intersection Observer
+              reveals, and full responsive layouts — the site you're on right now.
+            </p>
+            <ul class="flex flex-wrap gap-2 mt-5 font-mono text-[11px] uppercase tracking-widest">
+              <li class="tag">HTML</li><li class="tag">CSS</li><li class="tag">JavaScript</li><li class="tag">Tailwind</li>
+            </ul>
+            <div class="flex gap-6 mt-6 font-mono text-xs uppercase tracking-widest">
+              <a href="#top" class="link-underline">View site</a>
+              <a href="https://github.com/graymatterthechampion-tech" target="_blank" rel="noopener" class="link-underline">Source</a>
+            </div>
+          </div>
+        </article>
+
+        <article data-reveal class="project-card">
+          <div class="project-media grad-3">
+            <span class="font-mono text-xs text-ink/70 uppercase tracking-widest">03 / In progress</span>
+          </div>
+          <div class="p-8">
+            <h3 class="font-display text-2xl">Task &amp; Workflow Manager</h3>
+            <p class="text-mist mt-3 leading-relaxed">
+              A React + Redux task board backed by a REST API and MongoDB, built to
+              practice state management patterns beyond local component state.
+            </p>
+            <ul class="flex flex-wrap gap-2 mt-5 font-mono text-[11px] uppercase tracking-widest">
+              <li class="tag">React</li><li class="tag">Redux</li><li class="tag">MongoDB</li><li class="tag">REST</li>
+            </ul>
+            <div class="flex gap-6 mt-6 font-mono text-xs uppercase tracking-widest">
+              <a href="#" class="link-underline">Case study</a>
+              <a href="https://github.com/graymatterthechampion-tech" target="_blank" rel="noopener" class="link-underline">Source</a>
+            </div>
+          </div>
+        </article>
+
+        <article data-reveal data-reveal-delay="100" class="project-card">
+          <div class="project-media grad-4">
+            <span class="font-mono text-xs text-ink/70 uppercase tracking-widest">04 / Automation</span>
+          </div>
+          <div class="p-8">
+            <h3 class="font-display text-2xl">Trading Signal Automator</h3>
+            <p class="text-mist mt-3 leading-relaxed">
+              An automation pipeline that scans market data and applies rule-based
+              exit logic — the project that pulled me from trading into engineering.
+            </p>
+            <ul class="flex flex-wrap gap-2 mt-5 font-mono text-[11px] uppercase tracking-widest">
+              <li class="tag">Node.js</li><li class="tag">REST</li><li class="tag">Automation</li><li class="tag">Python</li>
+            </ul>
+            <div class="flex gap-6 mt-6 font-mono text-xs uppercase tracking-widest">
+              <a href="#" class="link-underline">Case study</a>
+              <a href="https://github.com/graymatterthechampion-tech" target="_blank" rel="noopener" class="link-underline">Source</a>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ JOURNEY ============ -->
+  <section id="journey" class="px-6 md:px-10 py-28 border-t border-hairline bg-panel/40">
+    <div class="max-w-7xl mx-auto">
+      <div data-reveal class="max-w-2xl mb-16">
+        <p class="eyebrow">Journey</p>
+        <h2 class="section-title">How I got here, in order.</h2>
+      </div>
+
+      <ol class="timeline">
+        <li data-reveal class="timeline-item">
+          <span class="timeline-marker">01</span>
+          <div>
+            <p class="font-mono text-signal text-xs uppercase tracking-widest">Foundations</p>
+            <h3 class="font-display text-xl mt-1">HTML, CSS &amp; JavaScript fundamentals</h3>
+            <p class="text-mist mt-2 leading-relaxed">
+              Learned core web concepts, Git &amp; GitHub workflows from scratch, and
+              built early static pages and layout exercises.
+            </p>
+          </div>
+        </li>
+        <li data-reveal data-reveal-delay="80" class="timeline-item">
+          <span class="timeline-marker">02</span>
+          <div>
+            <p class="font-mono text-signal text-xs uppercase tracking-widest">GoMyCode program</p>
+            <h3 class="font-display text-xl mt-1">Bootstrap projects &amp; responsive design</h3>
+            <p class="text-mist mt-2 leading-relaxed">
+              Shipped multiple checkpoints — landing pages, a store layout, and a full
+              animated portfolio theme — while mastering DevTools-driven debugging.
+            </p>
+          </div>
+        </li>
+        <li data-reveal data-reveal-delay="160" class="timeline-item">
+          <span class="timeline-marker">03</span>
+          <div>
+            <p class="font-mono text-signal text-xs uppercase tracking-widest">Full-stack build</p>
+            <h3 class="font-display text-xl mt-1">Shipped BulkMail to production</h3>
+            <p class="text-mist mt-2 leading-relaxed">
+              Designed, debugged, and deployed a full authentication + database-backed
+              application — migrating databases and resolving real production issues.
+            </p>
+          </div>
+        </li>
+        <li data-reveal data-reveal-delay="240" class="timeline-item">
+          <span class="timeline-marker">04</span>
+          <div>
+            <p class="font-mono text-signal text-xs uppercase tracking-widest">Now</p>
+            <h3 class="font-display text-xl mt-1">React, Redux &amp; TypeScript</h3>
+            <p class="text-mist mt-2 leading-relaxed">
+              Deepening front-end architecture skills while exploring infrastructure
+              ideas for the African market.
+            </p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============ CONTACT ============ -->
+  <section id="contact" class="px-6 md:px-10 py-28 border-t border-hairline">
+    <div class="max-w-7xl mx-auto grid lg:grid-cols-[0.45fr_0.55fr] gap-16">
+
+      <div data-reveal>
+        <p class="eyebrow">Contact</p>
+        <h2 class="section-title">Let's build<br />something real.</h2>
+        <p class="text-mist text-lg leading-relaxed mt-6 max-w-md">
+          Have a project, a role, or an idea worth building? My inbox is open —
+          I usually reply within a day.
+        </p>
+
+        <div class="mt-10 space-y-4 font-mono text-sm">
+          <p class="flex items-center gap-3 text-mist"><span class="text-signal">Email</span>graymatterthechampion@gmail.com</p>
+          <p class="flex items-center gap-3 text-mist"><span class="text-signal">Location</span> Lagos, Nigeria</p>
+          <p class="flex items-center gap-3 text-mist"><span class="text-signal">GitHub</span> graymatterthechampion-tech</p>
+        </div>
+      </div>
+
+      <form data-reveal data-reveal-delay="100" id="contactForm" class="space-y-6" novalidate>
+        <div class="form-row">
+          <label for="name">Name</label>
+          <input type="text" id="name" name="name" placeholder="Your full name" required />
+          <span class="form-error" data-error-for="name"></span>
+        </div>
+        <div class="form-row">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" placeholder="you@example.com" required />
+          <span class="form-error" data-error-for="email"></span>
+        </div>
+        <div class="form-row">
+          <label for="message">Message</label>
+          <textarea id="message" name="message" rows="5" placeholder="Tell me about your project..." required></textarea>
+          <span class="form-error" data-error-for="message"></span>
+        </div>
+        <button type="submit" class="btn-solid w-full sm:w-auto">Send message</button>
+        <p id="formStatus" class="font-mono text-xs uppercase tracking-widest text-signal hidden" role="status"></p>
+      </form>
+
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="px-6 md:px-10 py-10 border-t border-hairline">
+  <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-xs uppercase tracking-widest text-mist">
+    <p>&copy; <span id="year"></span> JohnnyMax. Built from scratch.</p>
+    <a href="#top" class="hover:text-signal transition-colors">Back to top ↑</a>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
