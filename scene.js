@@ -637,9 +637,10 @@ async function startScene() {
 
     material.uniforms.uProgress.value = currentProgress;
     material.uniforms.uTime.value = elapsed;
-    const heroRelease = Math.min(currentProgress, 1);
+    const heroRelease = smoothstep(0, 1, currentProgress);
     spinAngle += deltaSeconds * IDLE_SPIN_SPEED * heroRelease;
-    points.rotation.y = spinAngle + pointer.x * 0.25 * heroRelease;
+    const wrappedSpin = Math.atan2(Math.sin(spinAngle), Math.cos(spinAngle));
+    points.rotation.y = (wrappedSpin + pointer.x * 0.25) * heroRelease;
     points.rotation.x = pointer.y * 0.15 * heroRelease;
     meteorShower.update(elapsed, camera.aspect, 1 - Math.min(currentProgress, 1));
 
