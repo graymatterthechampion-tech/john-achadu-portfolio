@@ -124,26 +124,14 @@ const revealObserver = new IntersectionObserver(
 
 revealEls.forEach((el) => revealObserver.observe(el));
 
-/* Skill bars fill when their group scrolls into view */
-const skillGroups = document.querySelectorAll(".skill-group");
-
-const skillObserver = new IntersectionObserver(
-  (entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add("in-view");
-        skillObserver.unobserve(entry.target);
-      }
-    });
-  },
-  { threshold: 0.3 }
-);
-
-skillGroups.forEach((group) => skillObserver.observe(group));
-
 /* ============================================
-   Contact form validation (client-side only)
+   Contact form: validation and delivery via Web3Forms
    ============================================ */
+const WEB3FORMS_ENDPOINT = "https://api.web3forms.com/submit";
+const WEB3FORMS_ACCESS_KEY = "PASTE_YOUR_WEB3FORMS_ACCESS_KEY_HERE";
+const CONTACT_EMAIL = "graymatterthechampion@gmail.com";
+const REQUEST_TIMEOUT_MS = 15000;
+
 const contactForm = document.getElementById("contactForm");
 const formStatus = document.getElementById("formStatus");
 
@@ -165,46 +153,154 @@ function isValidEmail(value) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
-if (contactForm) {
-  contactForm.addEventListener("submit", (event) => {
+function validateForm(name, email, message) {
+  let valid = true;
+
+  if (name.length < 2) {
+    setError("name", "Please enter your name.");
+    valid = false;
+  } else {
+    setError("name", "");
+  }
+
+  if (!isValidEmail(email)) {
+    setError("email", "Please enter a valid email.");
+    valid = false;
+  } else {
+    setError("email", "");
+  }
+
+  if (message.length < 10) {
+    setError("message", "Message should be at least 10 characters.");
+    valid = false;
+  } else {
+    setError("message", "");
+  }
+
+  return valid;
+}
+
+function showStatus(message, isError) {
+  formStatus.textContent = message;
+  formStatus.classList.toggle("is-error", isError);
+  formStatus.classList.remove("hidden");
+}
+
+function hideStatus() {
+  formStatus.classList.add("hidden");
+  formStatus.classList.remove("is-error");
+}
+
+function hasAccessKey() {
+  return WEB3FORMS_ACCESS_KEY.length > 0 && !WEB3FORMS_ACCESS_KEY.startsWith("PASTE_");
+}
+
+async function sendMessage(payload) {
+  const controller = new AbortController();
+  const timeoutId = window.setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
+  try {
+    const response = await fetch(WEB3FORMS_ENDPOINT, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify(payload),
+      signal: controller.signal,
+    });
+
+    let body = null;
+    try {
+      body = await response.json();
+    } catch {
+      body = null;
+    }
+
+    const rejectedByService = body !== null && body.success === false;
+
+    if (response.ok && !rejectedByService) {
+      return { ok: true, reason: "" };
+    }
+    return { ok: false, reason: "rejected" };
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError") {
+      return { ok: false, reason: "timeout" };
+    }
+    return { ok: false, reason: "network" };
+  } finally {
+    window.clearTimeout(timeoutId);
+  }
+}
+
+function firstName(fullName) {
+  const parts = fullName.split(/\s+/);
+  return parts[0];
+}
+
+if (contactForm && formStatus) {
+  const submitButton = contactForm.querySelector('button[type="submit"]');
+  const submitLabel = submitButton ? submitButton.textContent : "Send message";
+  let isSending = false;
+
+  const setSending = (sending) => {
+    isSending = sending;
+    if (submitButton) {
+      submitButton.disabled = sending;
+      submitButton.textContent = sending ? "Sending..." : submitLabel;
+    }
+  };
+
+  contactForm.addEventListener("submit", async (event) => {
     event.preventDefault();
+
+    if (isSending) {
+      return;
+    }
 
     const name = contactForm.name.value.trim();
     const email = contactForm.email.value.trim();
     const message = contactForm.message.value.trim();
 
-    let valid = true;
-
-    if (name.length < 2) {
-      setError("name", "Please enter your name.");
-      valid = false;
-    } else {
-      setError("name", "");
-    }
-
-    if (!isValidEmail(email)) {
-      setError("email", "Please enter a valid email.");
-      valid = false;
-    } else {
-      setError("email", "");
-    }
-
-    if (message.length < 10) {
-      setError("message", "Message should be at least 10 characters.");
-      valid = false;
-    } else {
-      setError("message", "");
-    }
-
-    if (!valid) {
-      formStatus.classList.add("hidden");
+    if (!validateForm(name, email, message)) {
+      hideStatus();
       return;
     }
 
-    // No backend wired up yet — simulate a successful send.
-    formStatus.textContent = `Thanks ${name.split(" ")[0]}, your message is ready — connect a backend or mailto action to send it for real.`;
-    formStatus.classList.remove("hidden");
-    contactForm.reset();
+    if (contactForm.botcheck && contactForm.botcheck.checked) {
+      contactForm.reset();
+      return;
+    }
+
+    if (!hasAccessKey()) {
+      showStatus(`The form isn't connected yet. Please email me directly at ${CONTACT_EMAIL}.`, true);
+      return;
+    }
+
+    hideStatus();
+    setSending(true);
+
+    const result = await sendMessage({
+      access_key: WEB3FORMS_ACCESS_KEY,
+      subject: `New portfolio message from ${name}`,
+      name,
+      email,
+      message,
+    });
+
+    setSending(false);
+
+    if (result.ok) {
+      showStatus(`Thanks ${firstName(name)}, your message has been sent. I'll reply soon.`, false);
+      contactForm.reset();
+      return;
+    }
+
+    if (result.reason === "timeout") {
+      showStatus(`The request timed out. Please try again, or email me at ${CONTACT_EMAIL}.`, true);
+      return;
+    }
+
+    showStatus(`Your message couldn't be sent. Please try again, or email me at ${CONTACT_EMAIL}.`, true);
   });
 }
-
