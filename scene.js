@@ -1,5 +1,5 @@
-const PARTICLE_COUNT_DESKTOP = 12000;
-const PARTICLE_COUNT_MOBILE = 4000;
+const PARTICLE_COUNT_DESKTOP = 20000;
+const PARTICLE_COUNT_MOBILE = 6000;
 const MOBILE_BREAKPOINT_PX = 768;
 const MAX_PIXEL_RATIO_DESKTOP = 2;
 const MAX_PIXEL_RATIO_MOBILE = 1.5;
@@ -8,7 +8,7 @@ const OPACITY_MOBILE = 0.35;
 const POINT_SIZE = 3.2;
 const MORPH_EASING = 0.07;
 const POINTER_EASING = 0.05;
-const TRANSITION_START = 0.55;
+const TRANSITION_START = 0.7;
 const IDLE_SPIN_SPEED = 0.04;
 const NARROW_ASPECT = 0.9;
 const MIN_SHAPE_SCALE = 0.55;
@@ -26,12 +26,16 @@ const METEOR_HEAD_SIZE = 7;
 const METEOR_TAIL_SIZE = 1.5;
 const CAMERA_FOV = 50;
 const MOUNTAIN_OCTAVES = 5;
-const MOUNTAIN_HEIGHT = 2.6;
-const MOUNTAIN_TILT = 0.3;
+const MOUNTAIN_HEIGHT = 2.8;
 const CAMERA_DISTANCE = 8.5;
-const MOUNTAIN_WIDTH = 16;
-const MOUNTAIN_DEPTH = 6;
-const MOUNTAIN_BASE = -3.1;
+const MOUNTAIN_NEAR_Z = 2;
+const MOUNTAIN_FAR_Z = -20;
+const MOUNTAIN_BASE = -3.4;
+const MOUNTAIN_FAR_GROWTH = 2;
+const MOUNTAIN_ASPECT_COVER = 2.1;
+const MOUNTAIN_NOISE_SCALE = 0.28;
+const FOG_NEAR = 18;
+const FOG_FAR = 32;
 const TAU = Math.PI * 2;
 
 
@@ -48,13 +52,15 @@ const vertexShader = `
   uniform float uTime;
   uniform float uPixelRatio;
   uniform float uSize;
+  uniform float uFogNear;
+  uniform float uFogFar;
 
   varying float vMix;
+  varying float vFog;
 
   void main() {
     vec3 p = position;
-    p.y += sin(p.x * 0.8 + uTime * 0.5) * 0.04;
-    p.y += sin(uTime * 0.5) * 0.12;
+    p.y += sin(uTime * 0.4) * 0.1;
     p = mix(p, aShape1, clamp(uProgress, 0.0, 1.0));
     p = mix(p, aShape2, clamp(uProgress - 1.0, 0.0, 1.0));
     p = mix(p, aShape3, clamp(uProgress - 2.0, 0.0, 1.0));
@@ -65,9 +71,11 @@ const vertexShader = `
     p += vec3(sin(drift), cos(drift * 0.8), sin(drift * 1.3)) * 0.015;
 
     vec4 mvPosition = modelViewMatrix * vec4(p, 1.0);
-    gl_PointSize = uSize * aScale * uPixelRatio * (6.0 / -mvPosition.z);
+    float depth = max(-mvPosition.z, 1.0);
+    gl_PointSize = uSize * aScale * uPixelRatio * pow(6.0 / depth, 0.5);
     gl_Position = projectionMatrix * mvPosition;
     vMix = aMix;
+    vFog = 1.0 - smoothstep(uFogNear, uFogFar, depth);
   }
 `;
 
@@ -77,13 +85,14 @@ const fragmentShader = `
   uniform float uOpacity;
 
   varying float vMix;
+  varying float vFog;
 
   void main() {
     float distanceFromCenter = length(gl_PointCoord - 0.5);
     if (distanceFromCenter > 0.5) {
       discard;
     }
-    float alpha = smoothstep(0.5, 0.1, distanceFromCenter) * uOpacity;
+    float alpha = smoothstep(0.5, 0.1, distanceFromCenter) * uOpacity * vFog;
     gl_FragColor = vec4(mix(uColorA, uColorB, vMix), alpha);
     #include <colorspace_fragment>
   }
@@ -172,19 +181,23 @@ function ridgedHeight(x, z) {
 
 function mountainRange(count) {
   const out = new Float32Array(count * 3);
+  const halfTan = Math.tan((CAMERA_FOV * Math.PI) / 360);
   let placed = 0;
   let attempts = 0;
-  const maxAttempts = count * 20;
+  const maxAttempts = count * 30;
   while (placed < count) {
     attempts += 1;
-    const x = (Math.random() - 0.5) * MOUNTAIN_WIDTH;
-    const z = (Math.random() - 0.5) * MOUNTAIN_DEPTH;
-    const h = ridgedHeight(x + 3.7, z + 1.3);
-    const keepChance = 0.06 + h * h * h * 3;
+    const depthT = Math.random();
+    const z = MOUNTAIN_NEAR_Z + (MOUNTAIN_FAR_Z - MOUNTAIN_NEAR_Z) * depthT;
+    const halfWidth = halfTan * (CAMERA_DISTANCE - z) * MOUNTAIN_ASPECT_COVER;
+    const x = (Math.random() * 2 - 1) * halfWidth;
+    const h = ridgedHeight(x * MOUNTAIN_NOISE_SCALE + 3.7, z * MOUNTAIN_NOISE_SCALE + 1.3);
+    const keepChance = 0.02 + h * h * h * h * 6;
     if (attempts < maxAttempts && Math.random() > keepChance) {
       continue;
     }
-    setPoint(out, placed, x, h * MOUNTAIN_HEIGHT + MOUNTAIN_BASE - z * MOUNTAIN_TILT, z);
+    const y = MOUNTAIN_BASE + h * MOUNTAIN_HEIGHT * (1 + depthT * MOUNTAIN_FAR_GROWTH);
+    setPoint(out, placed, x, y, z);
     placed += 1;
   }
   return out;
@@ -562,6 +575,8 @@ async function startScene() {
       uPixelRatio: { value: pixelRatio },
       uSize: { value: POINT_SIZE },
       uOpacity: { value: mobile ? OPACITY_MOBILE : OPACITY_DESKTOP },
+      uFogNear: { value: FOG_NEAR },
+      uFogFar: { value: FOG_FAR },
       uColorA: { value: new THREE.Color(SIGNAL_COLOR) },
       uColorB: { value: new THREE.Color(VOLT_COLOR) },
     },
@@ -622,9 +637,10 @@ async function startScene() {
 
     material.uniforms.uProgress.value = currentProgress;
     material.uniforms.uTime.value = elapsed;
-    spinAngle += deltaSeconds * IDLE_SPIN_SPEED * Math.min(currentProgress, 1);
-    points.rotation.y = spinAngle + pointer.x * 0.25;
-    points.rotation.x = pointer.y * 0.15;
+    const heroRelease = Math.min(currentProgress, 1);
+    spinAngle += deltaSeconds * IDLE_SPIN_SPEED * heroRelease;
+    points.rotation.y = spinAngle + pointer.x * 0.25 * heroRelease;
+    points.rotation.x = pointer.y * 0.15 * heroRelease;
     meteorShower.update(elapsed, camera.aspect, 1 - Math.min(currentProgress, 1));
 
     renderer.render(scene, camera);
