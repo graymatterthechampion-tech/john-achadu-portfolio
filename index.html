@@ -3,8 +3,14 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>John Achadu  —  Software Engineer</title>
-<meta name="description" content="Portfolio of John Achadu (JohnnyMax), a full stack software engineer building web apps and automation tools from Lagos, Nigeria." />
+<title>John Achadu — Software Developer</title>
+<meta name="description" content="Portfolio of John Achadu, a software developer in Lagos, Nigeria, building web applications, REST APIs and email tooling with Node.js, Express, React and PostgreSQL." />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="John Achadu — Software Developer" />
+<meta property="og:description" content="Web applications, REST APIs and email tooling built with Node.js, Express, React and PostgreSQL." />
+<meta property="og:url" content="https://john-achadu-portfolio.vercel.app/" />
+<meta name="theme-color" content="#0B0D10" />
+<link rel="icon" href="favicon.svg" type="image/svg+xml" />
 
 <!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,34 +20,8 @@
 <!-- Tech icons -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@2.16.0/devicon.min.css" />
 
-<!-- Tailwind (CDN, config extended below) -->
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-  
-  tailwind.config = {
-    theme: {
-      extend: {
-        colors: {
-          ink: "#0B0D10",
-          panel: "#14171C",
-          panel2: "#191D23",
-          hairline: "#262B33",
-          paper: "#F2F1EC",
-          mist: "#9AA1AC",
-          signal: "#5CF2C0",
-          volt: "#8B7CFF",
-        },
-        fontFamily: {
-          display: ["'Black Ops One'", "cursive"],
-          spray: ["'Rubik Spray Paint'", "cursive"],
-          body: ["Arial", "sans-serif"],
-          mono: ["monospace"],
-        },
-      },
-    },
-  };
-</script>
-
+<!-- Tailwind, compiled to a static file (see README: Rebuilding Tailwind) -->
+<link rel="stylesheet" href="tailwind.css" />
 <link rel="stylesheet" href="style.css"/>
 
 <script type="importmap">
@@ -110,20 +90,20 @@
         <h1 class="font-display font-medium leading-[1.02] text-5xl sm:text-6xl lg:text-7xl tracking-tight">
           Hi, I'm John Achadu
         </h1>
-        <p class="font-mono text-xs uppercase tracking-[0.3em] text-mist mt-3"></p>
         <p class="font-display text-2xl sm:text-3xl text-mist mt-4">
           software developer
         </p>
         <p class="text-mist text-base sm:text-lg leading-relaxed mt-6 max-w-xl">
-          I build web applications end to end — from React interfaces to Node/Express
-          APIs backed by SQL and NoSQL databases. Currently sharpening my craft at
-          GoMyCode while shipping real tools like a production bulk-email platform,
-          with an eye on infrastructure for the African market.
+          I build web applications end to end, from React interfaces to Node.js and
+          Express APIs backed by PostgreSQL and MongoDB. My first production system, a
+          bulk-email platform, is live, and I'm finishing GoMyCode's Full-Stack Software
+          Engineering track in October 2026.
         </p>
 
         <div class="flex flex-wrap items-center gap-4 mt-10">
           <a href="#work" class="btn-solid">View my work</a>
           <a href="#contact" class="btn-ghost">Get in touch</a>
+          <a href="John-Achadu-CV.pdf" class="btn-ghost" download>Download CV</a>
         </div>
 
         <div class="flex items-center gap-6 mt-12">
@@ -151,9 +131,9 @@
             <span class="skill-chip" style="top:68%; left:46%; --rot:-4deg;"><i class="devicon-express-original"></i>Express</span>
             <span class="skill-chip" style="top:30%; left:73%; --rot:5deg;"><span class="chip-glyph">⇄</span>REST API</span>
             <span class="skill-chip" style="top:80%; left:70%; --rot:9deg;"><i class="devicon-mongodb-plain colored"></i>MongoDB</span>
-            <span class="skill-chip" style="top:86%; left:32%; --rot:-7deg;"><i class="devicon-mysql-plain colored"></i>MySQL</span>
+            <span class="skill-chip" style="top:86%; left:32%; --rot:-7deg;"><i class="devicon-tailwindcss-original colored"></i>Tailwind CSS</span>
             <span class="skill-chip" style="top:62%; left:87%; --rot:4deg;"><i class="devicon-postgresql-plain colored"></i>PostgreSQL</span>
-            <span class="skill-chip" style="bottom:8%; left:8%; --rot:5deg;"><i class="devicon-python-plain colored"></i>Python</span>
+            <span class="skill-chip" style="bottom:8%; left:8%; --rot:5deg;"><i class="devicon-threejs-original"></i>Three.js</span>
           </div>
           <p class="skill-hint" aria-hidden="true">// hover to assemble the stack</p>
         </div>
@@ -171,7 +151,7 @@
       </div>
       <div data-reveal data-reveal-delay="100" class="space-y-6 text-mist text-lg leading-relaxed">
         <p>
-          I'm a software engineer in Lagos, completing GoMyCode's Full-Stack Software
+          I'm a software developer in Lagos, completing GoMyCode's Full-Stack Software
           Engineering track in October 2026.
         </p>
         <p>
@@ -215,16 +195,23 @@
         <p class="eyebrow">Skills</p>
         <h2 class="section-title">The stack I build with.</h2>
         <p class="text-mist text-lg mt-4">
-          Tools I reach for daily across the front end, back end, and data layer.
+          The languages, frameworks and tools behind the projects on this page.
         </p>
       </div>
 
-      <div class="grid md:grid-cols-3 gap-8">
+      <div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-6">
 
-        <!-- Frontend -->
         <div data-reveal class="skill-group">
-          <h3 class="font-mono text-xs uppercase tracking-widest text-signal mb-6">01 — Frontend</h3>
+          <h3 class="font-mono text-xs uppercase tracking-widest text-signal mb-6">01 — Languages</h3>
           <ul class="space-y-5">
+            <li class="skill-item">
+              <i class="devicon-javascript-plain colored"></i>
+              <p>JavaScript</p>
+            </li>
+            <li class="skill-item">
+              <i class="devicon-typescript-plain colored"></i>
+              <p>TypeScript</p>
+            </li>
             <li class="skill-item">
               <i class="devicon-html5-plain colored"></i>
               <p>HTML5</p>
@@ -233,40 +220,33 @@
               <i class="devicon-css3-plain colored"></i>
               <p>CSS3</p>
             </li>
-            <li class="skill-item">
-              <i class="devicon-javascript-plain colored"></i>
-              <p>JavaScript</p>
-            </li>
+          </ul>
+        </div>
+
+        <div data-reveal data-reveal-delay="80" class="skill-group">
+          <h3 class="font-mono text-xs uppercase tracking-widest text-signal mb-6">02 — Frontend</h3>
+          <ul class="space-y-5">
             <li class="skill-item">
               <i class="devicon-react-original colored"></i>
               <p>React</p>
-            </li>
-            <li class="skill-item">
-              <i class="devicon-nextjs-plain"></i>
-              <p>Next.js</p>
-            </li>
-            <li class="skill-item">
-              <i class="devicon-tailwindcss-original colored"></i>
-              <p>Tailwind CSS</p>
             </li>
             <li class="skill-item">
               <i class="devicon-redux-original colored"></i>
               <p>Redux</p>
             </li>
             <li class="skill-item">
-              <i class="devicon-typescript-plain colored"></i>
-              <p>TypeScript</p>
+              <i class="devicon-tailwindcss-original colored"></i>
+              <p>Tailwind CSS</p>
             </li>
             <li class="skill-item">
-              <i class="devicon-python-plain colored"></i>
-              <p>Python</p>
+              <i class="devicon-threejs-original"></i>
+              <p>Three.js</p>
             </li>
           </ul>
         </div>
 
-        <!-- Backend -->
-        <div data-reveal data-reveal-delay="100" class="skill-group">
-          <h3 class="font-mono text-xs uppercase tracking-widest text-signal mb-6">02 — Backend</h3>
+        <div data-reveal data-reveal-delay="160" class="skill-group">
+          <h3 class="font-mono text-xs uppercase tracking-widest text-signal mb-6">03 — Backend</h3>
           <ul class="space-y-5">
             <li class="skill-item">
               <i class="devicon-nodejs-plain colored"></i>
@@ -280,28 +260,45 @@
               <span class="rest-icon">API</span>
               <p>REST APIs</p>
             </li>
-            <li class="skill-item">
-              <i class="devicon-socketio-original"></i>
-              <p>Socket.io</p>
-            </li>
           </ul>
         </div>
 
-        <!-- Databases -->
-        <div data-reveal data-reveal-delay="200" class="skill-group">
-          <h3 class="font-mono text-xs uppercase tracking-widest text-signal mb-6">03 — Databases</h3>
+        <div data-reveal data-reveal-delay="240" class="skill-group">
+          <h3 class="font-mono text-xs uppercase tracking-widest text-signal mb-6">04 — Databases</h3>
           <ul class="space-y-5">
+            <li class="skill-item">
+              <i class="devicon-postgresql-plain colored"></i>
+              <p>PostgreSQL</p>
+            </li>
             <li class="skill-item">
               <i class="devicon-mongodb-plain colored"></i>
               <p>MongoDB</p>
             </li>
+          </ul>
+        </div>
+
+        <div data-reveal data-reveal-delay="320" class="skill-group">
+          <h3 class="font-mono text-xs uppercase tracking-widest text-signal mb-6">05 — Tools</h3>
+          <ul class="space-y-5">
             <li class="skill-item">
-              <i class="devicon-mysql-plain colored"></i>
-              <p>MySQL</p>
+              <i class="devicon-git-plain colored"></i>
+              <p>Git</p>
             </li>
             <li class="skill-item">
-              <i class="devicon-postgresql-plain colored"></i>
-              <p>PostgreSQL</p>
+              <i class="devicon-github-original"></i>
+              <p>GitHub</p>
+            </li>
+            <li class="skill-item">
+              <i class="devicon-vitejs-plain colored"></i>
+              <p>Vite</p>
+            </li>
+            <li class="skill-item">
+              <i class="devicon-vercel-original"></i>
+              <p>Vercel</p>
+            </li>
+            <li class="skill-item">
+              <span class="rest-icon">R</span>
+              <p>Render</p>
             </li>
           </ul>
         </div>
@@ -330,9 +327,10 @@
               A two-part email delivery system. The verifier cleans contact lists
               before a campaign, and BulkMail sends to the cleaned list, with
               authentication, a sending-address manager, and a PostgreSQL database on Neon.
+              BulkMail is live in production on Render.
             </p>
             <ul class="flex flex-wrap gap-2 mt-5 font-mono text-[11px] uppercase tracking-widest">
-              <li class="tag">React</li><li class="tag">Express</li><li class="tag">PostgreSQL</li><li class="tag">Auth</li>
+              <li class="tag">React</li><li class="tag">Express</li><li class="tag">PostgreSQL</li><li class="tag">Render</li>
             </ul>
             <div class="flex gap-6 mt-6 font-mono text-xs uppercase tracking-widest">
               <a href="https://github.com/graymatterthechampion-tech" target="_blank" rel="noopener" class="link-underline">GitHub</a>
@@ -365,14 +363,14 @@
             <span class="font-mono text-xs text-ink/70 uppercase tracking-widest">03 / Team project · In development</span>
           </div>
           <div class="p-8">
-            <h3 class="font-display text-2xl">Real-Time Social App</h3>
+            <h3 class="font-display text-2xl">Social Media App</h3>
             <p class="text-mist mt-3 leading-relaxed">
-              A real-time social media application I'm building with two GoMyCode
-              cohort-mates for the program's lab phase. I'm engineering the
-              architecture, with Socket.io for real-time messaging and MongoDB for persistence.
+              A social media application I'm building with two GoMyCode cohort-mates
+              for the program's lab phase. I'm engineering the architecture: a React and
+              TypeScript front end with Redux for state, and an Express API backed by MongoDB.
             </p>
             <ul class="flex flex-wrap gap-2 mt-5 font-mono text-[11px] uppercase tracking-widest">
-              <li class="tag">Next.js</li><li class="tag">Node.js</li><li class="tag">Socket.io</li><li class="tag">MongoDB</li>
+              <li class="tag">React</li><li class="tag">TypeScript</li><li class="tag">Redux</li><li class="tag">Express</li><li class="tag">MongoDB</li>
             </ul>
           </div>
         </article>
@@ -393,44 +391,33 @@
         <li data-reveal class="timeline-item">
           <span class="timeline-marker">01</span>
           <div>
-            <p class="font-mono text-signal text-xs uppercase tracking-widest">Foundations</p>
-            <h3 class="font-display text-xl mt-1">HTML, CSS &amp; JavaScript fundamentals</h3>
+            <p class="font-mono text-signal text-xs uppercase tracking-widest">Foundations · GoMyCode</p>
+            <h3 class="font-display text-xl mt-1">From web fundamentals to React</h3>
             <p class="text-mist mt-2 leading-relaxed">
-              Learned core web concepts, Git &amp; GitHub workflows from scratch, and
-              built early static pages and layout exercises.
+              Learned HTML, CSS, JavaScript, Git and GitHub, then React with Redux for
+              state management through GoMyCode's checkpoint projects.
             </p>
           </div>
         </li>
         <li data-reveal data-reveal-delay="80" class="timeline-item">
           <span class="timeline-marker">02</span>
           <div>
-            <p class="font-mono text-signal text-xs uppercase tracking-widest">GoMyCode program</p>
-            <h3 class="font-display text-xl mt-1">Bootstrap projects &amp; responsive design</h3>
+            <p class="font-mono text-signal text-xs uppercase tracking-widest">First production system</p>
+            <h3 class="font-display text-xl mt-1">Shipped BulkMail to production</h3>
             <p class="text-mist mt-2 leading-relaxed">
-              Shipped multiple checkpoints — landing pages, a store layout, and a full
-              animated portfolio theme — while mastering DevTools-driven debugging.
+              Built and deployed an authenticated, database-backed bulk-email app on Render,
+              migrated its database to PostgreSQL on Neon, and resolved production issues after launch.
             </p>
           </div>
         </li>
         <li data-reveal data-reveal-delay="160" class="timeline-item">
           <span class="timeline-marker">03</span>
           <div>
-            <p class="font-mono text-signal text-xs uppercase tracking-widest">Full-stack build</p>
-            <h3 class="font-display text-xl mt-1">Shipped BulkMail to production</h3>
-            <p class="text-mist mt-2 leading-relaxed">
-              Designed, debugged, and deployed a full authentication + database-backed
-              application — migrating databases and resolving real production issues.
-            </p>
-          </div>
-        </li>
-        <li data-reveal data-reveal-delay="240" class="timeline-item">
-          <span class="timeline-marker">04</span>
-          <div>
             <p class="font-mono text-signal text-xs uppercase tracking-widest">Now</p>
             <h3 class="font-display text-xl mt-1">A search engine &amp; a team build</h3>
             <p class="text-mist mt-2 leading-relaxed">
-              Building a search engine API from scratch and co-building a real-time
-              social app for my GoMyCode lab phase, while deepening React, Redux and TypeScript.
+              Building a search engine API from scratch in TypeScript, and co-building a social
+              media app for my GoMyCode lab phase with React, TypeScript, Redux, Express and MongoDB.
             </p>
           </div>
         </li>
@@ -450,10 +437,11 @@
           I usually reply within a day.
         </p>
 
-        <div class="mt-10 space-y-4 font-mono text-sm">
+        <div class="contact-details mt-10 space-y-4 font-mono text-sm">
           <p class="flex items-center gap-3 text-mist"><span class="text-signal">Email</span><a href="mailto:graymatterthechampion@gmail.com" class="link-underline">graymatterthechampion@gmail.com</a></p>
           <p class="flex items-center gap-3 text-mist"><span class="text-signal">Location</span> Lagos, Nigeria</p>
           <p class="flex items-center gap-3 text-mist"><span class="text-signal">GitHub</span><a href="https://github.com/graymatterthechampion-tech" target="_blank" rel="noopener" class="link-underline">graymatterthechampion-tech</a></p>
+          <p class="flex items-center gap-3 text-mist"><span class="text-signal">CV</span><a href="John-Achadu-CV.pdf" class="link-underline" download>Download PDF</a></p>
         </div>
       </div>
 
@@ -486,7 +474,7 @@
 <!-- ============ FOOTER ============ -->
 <footer class="px-6 md:px-10 py-10 border-t border-hairline">
   <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-xs uppercase tracking-widest text-mist">
-    <p>&copy; <span id="year"></span> JohnnyMax. Built from scratch.</p>
+    <p>&copy; <span id="year"></span> John Achadu. Hand-built with HTML, CSS, JavaScript &amp; Three.js.</p>
     <a href="#top" class="hover:text-signal transition-colors">Back to top ↑</a>
   </div>
 </footer>

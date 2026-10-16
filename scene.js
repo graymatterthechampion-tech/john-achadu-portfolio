@@ -1,5 +1,13 @@
 const PARTICLE_COUNT_DESKTOP = 20000;
 const PARTICLE_COUNT_MOBILE = 9000;
+const PARTICLE_COUNT_LOW_END = 6000;
+const LOW_END_MEMORY_GB = 2;
+const LOW_END_CORES = 2;
+const QUALITY_WARMUP_FRAMES = 60;
+const QUALITY_SAMPLE_FRAMES = 120;
+const SLOW_FRAME_MS = 34;
+const MAX_SAMPLE_GAP_MS = 250;
+const REDUCED_PARTICLE_SHARE = 0.5;
 const MOBILE_BREAKPOINT_PX = 768;
 const MAX_PIXEL_RATIO_DESKTOP = 2;
 const MAX_PIXEL_RATIO_MOBILE = 1.5;
@@ -442,6 +450,39 @@ function isMobileViewport() {
   return window.innerWidth < MOBILE_BREAKPOINT_PX;
 }
 
+function isLowEndDevice() {
+  const memory = navigator.deviceMemory;
+  const cores = navigator.hardwareConcurrency;
+  const lowMemory = typeof memory === "number" && memory <= LOW_END_MEMORY_GB;
+  const fewCores = typeof cores === "number" && cores <= LOW_END_CORES;
+  return lowMemory || fewCores;
+}
+
+function createFrameMonitor(onSlow) {
+  let frames = 0;
+  let sampled = 0;
+  let totalMs = 0;
+  let finished = false;
+  return (frameMs) => {
+    if (finished) {
+      return;
+    }
+    frames += 1;
+    if (frames <= QUALITY_WARMUP_FRAMES || frameMs > MAX_SAMPLE_GAP_MS) {
+      return;
+    }
+    totalMs += frameMs;
+    sampled += 1;
+    if (sampled < QUALITY_SAMPLE_FRAMES) {
+      return;
+    }
+    finished = true;
+    if (totalMs / sampled > SLOW_FRAME_MS) {
+      onSlow();
+    }
+  };
+}
+
 function randomBetween(min, max) {
   return min + Math.random() * (max - min);
 }
@@ -573,8 +614,14 @@ async function startScene() {
   }
 
   const mobile = isMobileViewport();
-  const count = mobile ? PARTICLE_COUNT_MOBILE : PARTICLE_COUNT_DESKTOP;
-  const pixelRatio = Math.min(window.devicePixelRatio || 1, mobile ? MAX_PIXEL_RATIO_MOBILE : MAX_PIXEL_RATIO_DESKTOP);
+  const lowEnd = isLowEndDevice();
+  let count = mobile ? PARTICLE_COUNT_MOBILE : PARTICLE_COUNT_DESKTOP;
+  let maxPixelRatio = mobile ? MAX_PIXEL_RATIO_MOBILE : MAX_PIXEL_RATIO_DESKTOP;
+  if (lowEnd) {
+    count = PARTICLE_COUNT_LOW_END;
+    maxPixelRatio = 1;
+  }
+  const pixelRatio = Math.min(window.devicePixelRatio || 1, maxPixelRatio);
 
   let renderer;
   try {
@@ -659,6 +706,14 @@ async function startScene() {
     targetProgress = computeTargetProgress(sections);
   };
 
+  const reduceQuality = () => {
+    renderer.setPixelRatio(1);
+    material.uniforms.uPixelRatio.value = 1;
+    geometry.setDrawRange(0, Math.floor(count * REDUCED_PARTICLE_SHARE));
+    canvas.dataset.quality = "reduced";
+  };
+  const recordFrame = createFrameMonitor(reduceQuality);
+
   const onPointerMove = (event) => {
     pointer.targetX = (event.clientX / window.innerWidth) * 2 - 1;
     pointer.targetY = (event.clientY / window.innerHeight) * 2 - 1;
@@ -666,6 +721,7 @@ async function startScene() {
 
   const renderFrame = () => {
     const now = performance.now();
+    recordFrame(now - lastFrameTime);
     const elapsed = (now - startTime) / 1000;
     const deltaSeconds = Math.min((now - lastFrameTime) / 1000, 0.1);
     lastFrameTime = now;
