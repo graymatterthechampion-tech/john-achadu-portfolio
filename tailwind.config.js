@@ -3,14 +3,14 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        ink: "#0B0D10",
-        panel: "#14171C",
-        panel2: "#191D23",
-        hairline: "#262B33",
-        paper: "#F2F1EC",
-        mist: "#9AA1AC",
-        signal: "#5CF2C0",
-        volt: "#8B7CFF",
+        ink: "#1F1F23",
+        panel: "#E2DDD4",
+        panel2: "#F3F0EA",
+        hairline: "#CECBC5",
+        paper: "#EBE7E0",
+        mist: "#5B5A60",
+        signal: "#0A6B58",
+        volt: "#5A4BD6",
       },
       fontFamily: {
         display: ["'Black Ops One'", "cursive"],

@@ -11,8 +11,8 @@ const REDUCED_PARTICLE_SHARE = 0.5;
 const MOBILE_BREAKPOINT_PX = 768;
 const MAX_PIXEL_RATIO_DESKTOP = 2;
 const MAX_PIXEL_RATIO_MOBILE = 1.5;
-const OPACITY_DESKTOP = 0.55;
-const OPACITY_MOBILE = 0.35;
+const OPACITY_DESKTOP = 0.75;
+const OPACITY_MOBILE = 0.6;
 const POINT_SIZE = 3.2;
 const MORPH_EASING = 0.07;
 const POINTER_EASING = 0.05;
@@ -20,8 +20,8 @@ const TRANSITION_START = 0.7;
 const IDLE_SPIN_SPEED = 0.04;
 const NARROW_ASPECT = 0.9;
 const MIN_SHAPE_SCALE = 0.55;
-const SIGNAL_COLOR = "#5CF2C0";
-const VOLT_COLOR = "#8B7CFF";
+const INK_COLOR = "#1F1F23";
+const ACCENT_COLOR = "#0A6B58";
 const SHAPE_COUNT = 6;
 const METEOR_SLOTS = 3;
 const METEOR_TAIL_POINTS = 96;
@@ -53,7 +53,7 @@ const FOG_FAR = 32;
 const PULSE_PERIOD_S = 7;
 const PULSE_REACH = 36;
 const PULSE_WIDTH = 1.8;
-const PULSE_COLOR = "#E6FFF7";
+const PULSE_COLOR = "#14A889";
 const TAU = Math.PI * 2;
 
 
@@ -521,11 +521,11 @@ function createMeteorShower(THREE, pixelRatio) {
     fragmentShader: meteorFragmentShader,
     uniforms: {
       uPixelRatio: { value: pixelRatio },
-      uColor: { value: new THREE.Color(SIGNAL_COLOR) },
+      uColor: { value: new THREE.Color(ACCENT_COLOR) },
     },
     transparent: true,
     depthWrite: false,
-    blending: THREE.AdditiveBlending,
+    blending: THREE.NormalBlending,
   });
 
   const object = new THREE.Points(geometry, material);
@@ -671,12 +671,12 @@ async function startScene() {
       uPulseReach: { value: PULSE_REACH },
       uPulseWidth: { value: PULSE_WIDTH },
       uPulseColor: { value: new THREE.Color(PULSE_COLOR) },
-      uColorA: { value: new THREE.Color(SIGNAL_COLOR) },
-      uColorB: { value: new THREE.Color(VOLT_COLOR) },
+      uColorA: { value: new THREE.Color(INK_COLOR) },
+      uColorB: { value: new THREE.Color(ACCENT_COLOR) },
     },
     transparent: true,
     depthWrite: false,
-    blending: THREE.AdditiveBlending,
+    blending: THREE.NormalBlending,
   });
 
   const points = new THREE.Points(geometry, material);

@@ -11,8 +11,8 @@ const FADE_EDGE = 0.22;
 const SCATTER_SPREAD = 2.2;
 const HOVER_SCATTER_FACTOR = 0.55;
 const TAP_HOLD_MS = 1600;
-const SCATTERED_RGB = [139, 124, 255];
-const ASSEMBLED_RGB = [92, 242, 192];
+const SCATTERED_RGB = [91, 90, 96];
+const ASSEMBLED_RGB = [10, 107, 88];
 
 function clamp01(value) {
   return Math.min(Math.max(value, 0), 1);

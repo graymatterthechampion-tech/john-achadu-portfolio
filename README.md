@@ -16,6 +16,23 @@ Live site: https://john-achadu-portfolio.vercel.app
 | Icons | Devicon |
 | Hosting | Vercel |
 
+## Design
+
+Light theme: warm cream background with ink text, using the neutral palette of the reference portfolio, and a deep teal accent of my own.
+
+| Token | Colour | Used for |
+|---|---|---|
+| `paper` | `#EBE7E0` | Page background |
+| `panel` | `#E2DDD4` | Alternate sections, mobile menu |
+| `panel2` | `#F3F0EA` | Cards, inputs |
+| `ink` | `#1F1F23` | Headings and main text |
+| `mist` | `#5B5A60` | Body and secondary text |
+| `hairline` | `#CECBC5` | Borders |
+| `signal` | `#0A6B58` | Accent: labels, links, primary button |
+| `volt` | `#5A4BD6` | Secondary accent |
+
+Every text colour meets WCAG AA contrast (4.5:1) on the backgrounds it sits on. Sections after the hero sit on cream at 86% opacity so the 3D shapes show through as texture without competing with the text.
+
 ## Features
 
 - Scroll-driven 3D particle background that morphs into a new shape for each section: a jagged mountain range, a globe, a lattice cube, a node network, a double helix and an envelope
