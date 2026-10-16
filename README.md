@@ -20,7 +20,9 @@ Live site: https://john-achadu-portfolio.vercel.app
 
 - Scroll-driven 3D particle background that morphs into a new shape for each section: a jagged mountain range, a globe, a lattice cube, a node network, a double helix and an envelope
 - Hero sky with a static, floating mountain range, a ripple that pulses out from the highest peak, and shooting stars that streak in from both sides
-- Tech-stack particle cloud: each skill drifts as scattered dust and assembles into its name when the cursor comes near; on touch screens the skills assemble in turn on their own, and tapping one forms it
+- Centred hero, with proportions measured from the reference design and scaled with `clamp()` and `min()` for every screen size
+- Tech-stack particle scene: each skill assembles from drifting dust as it scrolls towards the middle of the screen and blows apart as it scrolls away; hovering or tapping a word scatters it
+- Full-width particle terrain sampled densest near the viewer, with a low foreground so it reaches the bottom of the screen on any aspect ratio
 - Performance safeguards: phones that report 2 GB of memory or less, or 2 CPU cores or fewer, start with fewer particles at 1x resolution, and any device that averages under about 30 fps after warm-up automatically drops to half the particles
 - The 3D layer is skipped entirely for reduced-motion users, devices without WebGL2, and when the CDN fails, leaving the rest of the site untouched
 - Contact form delivered through Web3Forms, with validation, a request timeout, double-submit protection, a hidden spam trap, and the visitor's message kept if sending fails

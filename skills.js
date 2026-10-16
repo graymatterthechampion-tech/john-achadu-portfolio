@@ -5,7 +5,11 @@ const PARTICLE_LAG = 0.35;
 const DRIFT_AMPLITUDE = 7;
 const DOT_SIZE = 1.7;
 const FONT_WAIT_MS = 1500;
-const SPOTLIGHT_INTERVAL_MS = 1800;
+const FOCUS_ENTER = 0.12;
+const FOCUS_FULL = 0.5;
+const FADE_EDGE = 0.22;
+const SCATTER_SPREAD = 2.2;
+const HOVER_SCATTER_FACTOR = 0.55;
 const TAP_HOLD_MS = 1600;
 const SCATTERED_RGB = [139, 124, 255];
 const ASSEMBLED_RGB = [92, 242, 192];
@@ -157,8 +161,6 @@ function startSkillParticles() {
   let pointerX = Number.NaN;
   let pointerY = Number.NaN;
   let tapHoldUntil = 0;
-  let spotlightIndex = 0;
-  let nextSpotlightAt = performance.now() + SPOTLIGHT_INTERVAL_MS;
   let frameId = 0;
   let running = false;
   let lastTime = performance.now();
@@ -180,36 +182,43 @@ function startSkillParticles() {
     context.setTransform(ratio, 0, 0, ratio, 0, 0);
     sizing = sizingFor(rect.width - CANVAS_MARGIN * 2);
     words = buildWords(chips, rect, sizing);
-    spotlightIndex = 0;
   };
 
   const drawFrame = (now) => {
     const deltaSeconds = Math.min((now - lastTime) / 1000, 0.1);
     lastTime = now;
     const elapsed = now / 1000;
-    const hoverless = isHoverless();
 
-    if (hoverless && now > tapHoldUntil) {
+    if (isHoverless() && now > tapHoldUntil) {
       clearPointer();
-    }
-    if (hoverless && now >= nextSpotlightAt && words.length > 0) {
-      spotlightIndex = (spotlightIndex + 1) % words.length;
-      nextSpotlightAt = now + SPOTLIGHT_INTERVAL_MS;
     }
 
     const rect = canvas.getBoundingClientRect();
+    const viewportMiddle = window.innerHeight / 2;
     const localPointerX = pointerX - rect.left;
     const localPointerY = pointerY - rect.top;
     const hasPointer = Number.isFinite(localPointerX) && Number.isFinite(localPointerY);
 
     context.clearRect(0, 0, rect.width, rect.height);
 
-    words.forEach((word, index) => {
+    words.forEach((word) => {
+      const wordScreenY = rect.top + word.centerY;
+      const distanceFromMiddle = Math.abs(wordScreenY - viewportMiddle) / viewportMiddle;
+      const focus = 1 - clamp01(distanceFromMiddle);
+      const scrollTarget = smoothstep01((focus - FOCUS_ENTER) / (FOCUS_FULL - FOCUS_ENTER));
+      const visibility = smoothstep01(focus / FADE_EDGE);
+      const spread = 1 + (1 - visibility) * SCATTER_SPREAD;
+
       const pointerNear =
-        hasPointer && Math.hypot(localPointerX - word.centerX, localPointerY - word.centerY) < sizing.revealRadius;
-      const spotlit = hoverless && !hasPointer && index === spotlightIndex;
+        hasPointer &&
+        Math.hypot(localPointerX - word.centerX, localPointerY - word.centerY) < sizing.revealRadius * HOVER_SCATTER_FACTOR;
+      const target = pointerNear ? 0 : scrollTarget;
       const step = ASSEMBLE_SPEED * deltaSeconds;
-      word.progress = clamp01(word.progress + (pointerNear || spotlit ? step : -step));
+      if (word.progress < target) {
+        word.progress = Math.min(target, word.progress + step);
+      } else {
+        word.progress = Math.max(target, word.progress - step);
+      }
 
       const red = mixChannel(SCATTERED_RGB[0], ASSEMBLED_RGB[0], word.progress);
       const green = mixChannel(SCATTERED_RGB[1], ASSEMBLED_RGB[1], word.progress);
@@ -221,9 +230,11 @@ function startSkillParticles() {
         const drift = DRIFT_AMPLITUDE * (1 - local);
         const driftX = Math.sin(elapsed * particle.speed + particle.phase) * drift;
         const driftY = Math.cos(elapsed * particle.speed * 0.8 + particle.phase) * drift;
-        const x = particle.homeX + (particle.targetX - particle.homeX) * local + driftX;
-        const y = particle.homeY + (particle.targetY - particle.homeY) * local + driftY;
-        context.globalAlpha = 0.45 + 0.55 * local;
+        const homeX = word.centerX + (particle.homeX - word.centerX) * spread;
+        const homeY = word.centerY + (particle.homeY - word.centerY) * spread;
+        const x = homeX + (particle.targetX - homeX) * local + driftX;
+        const y = homeY + (particle.targetY - homeY) * local + driftY;
+        context.globalAlpha = (0.45 + 0.55 * local) * visibility;
         context.fillRect(x, y, DOT_SIZE, DOT_SIZE);
       }
     });

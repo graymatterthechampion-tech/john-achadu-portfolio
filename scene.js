@@ -35,12 +35,18 @@ const METEOR_TAIL_SIZE = 1.5;
 const CAMERA_FOV = 50;
 const MOUNTAIN_OCTAVES = 5;
 const MOUNTAIN_HEIGHT = 2.8;
-const CAMERA_DISTANCE = 8.5;
-const MOUNTAIN_NEAR_Z = 2;
+const CAMERA_DISTANCE = 8.9;
+const MOUNTAIN_NEAR_Z = 2.5;
 const MOUNTAIN_FAR_Z = -20;
 const MOUNTAIN_BASE = -3.4;
 const MOUNTAIN_FAR_GROWTH = 2;
-const MOUNTAIN_ASPECT_COVER = 2.1;
+const MOUNTAIN_COVER_MARGIN = 1.2;
+const MOUNTAIN_MIN_COVER = 0.8;
+const MOUNTAIN_MAX_COVER = 2.6;
+const MOUNTAIN_DEPTH_BIAS = 1.8;
+const MOUNTAIN_FOREGROUND_FLOOR = 0.2;
+const MOUNTAIN_FOREGROUND_RISE = 0.25;
+const MOUNTAIN_FLOOR_KEEP = 0.15;
 const MOUNTAIN_NOISE_SCALE = 0.28;
 const FOG_NEAR = 18;
 const FOG_FAR = 32;
@@ -208,24 +214,26 @@ function ridgedHeight(x, z) {
   return height / total;
 }
 
-function mountainRange(count) {
+function mountainRange(count, aspect) {
   const out = new Float32Array(count * 3);
   const halfTan = Math.tan((CAMERA_FOV * Math.PI) / 360);
+  const cover = Math.min(Math.max(aspect * MOUNTAIN_COVER_MARGIN, MOUNTAIN_MIN_COVER), MOUNTAIN_MAX_COVER);
   let placed = 0;
   let attempts = 0;
   const maxAttempts = count * 30;
   while (placed < count) {
     attempts += 1;
-    const depthT = Math.random();
+    const depthT = Math.pow(Math.random(), MOUNTAIN_DEPTH_BIAS);
     const z = MOUNTAIN_NEAR_Z + (MOUNTAIN_FAR_Z - MOUNTAIN_NEAR_Z) * depthT;
-    const halfWidth = halfTan * (CAMERA_DISTANCE - z) * MOUNTAIN_ASPECT_COVER;
+    const halfWidth = halfTan * (CAMERA_DISTANCE - z) * cover;
     const x = (Math.random() * 2 - 1) * halfWidth;
     const h = ridgedHeight(x * MOUNTAIN_NOISE_SCALE + 3.7, z * MOUNTAIN_NOISE_SCALE + 1.3);
-    const keepChance = 0.02 + h * h * h * h * 6;
+    const keepChance = MOUNTAIN_FLOOR_KEEP + h * h * h * h * 6;
     if (attempts < maxAttempts && Math.random() > keepChance) {
       continue;
     }
-    const y = MOUNTAIN_BASE + h * MOUNTAIN_HEIGHT * (1 + depthT * MOUNTAIN_FAR_GROWTH);
+    const foreground = MOUNTAIN_FOREGROUND_FLOOR + (1 - MOUNTAIN_FOREGROUND_FLOOR) * smoothstep(0, MOUNTAIN_FOREGROUND_RISE, depthT);
+    const y = MOUNTAIN_BASE + h * MOUNTAIN_HEIGHT * (1 + depthT * MOUNTAIN_FAR_GROWTH) * foreground;
     setPoint(out, placed, x, y, z);
     placed += 1;
   }
@@ -402,9 +410,9 @@ function findHighestPoint(positions) {
   return { x: positions[highest * 3], z: positions[highest * 3 + 2] };
 }
 
-function buildShapes(count) {
+function buildShapes(count, aspect) {
   return [
-    mountainRange(count),
+    mountainRange(count, aspect),
     fibonacciSphere(count, 1.7),
     latticeCube(count, 2.4),
     networkGraph(count, 26, 1.9),
@@ -636,7 +644,8 @@ async function startScene() {
   const camera = new THREE.PerspectiveCamera(CAMERA_FOV, 1, 0.1, 100);
   camera.position.set(0, 0, CAMERA_DISTANCE);
 
-  const shapes = buildShapes(count);
+  const viewportAspect = window.innerHeight > 0 ? window.innerWidth / window.innerHeight : 1; 
+  const shapes = buildShapes(count, viewportAspect);
   const pulseOrigin = findHighestPoint(shapes[0]);
   const geometry = new THREE.BufferGeometry();
   geometry.setAttribute("position", new THREE.BufferAttribute(shapes[0], 3));
