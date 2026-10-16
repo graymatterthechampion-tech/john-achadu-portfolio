@@ -92,7 +92,8 @@ The visual concept of a scroll-morphing particle background was inspired by [Kiz
 - [x] Three.js particle background with reduced-motion, no-WebGL and slow-device fallbacks
 - [x] Deploy to Vercel
 - [x] Compile Tailwind instead of using the Play CDN
-- [ ] Link each project to its repository and live demo
+- [ ] Link each public project to its repository (BulkMail stays private; code walkthrough on request)
+- [ ] Public BulkMail demo with its own database and sending disabled
 - [ ] Add project screenshots to the Work cards
 
 ## Contact
