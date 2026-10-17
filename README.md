@@ -39,7 +39,7 @@ Every text colour meets WCAG AA contrast (4.5:1) on the backgrounds it sits on. 
 - Hero sky with a static, floating mountain range, a ripple that pulses out from the highest peak, and shooting stars that streak in from both sides
 - Centred hero, with proportions measured from the reference design and scaled with `clamp()` and `min()` for every screen size
 - Tech-stack particle scene: each skill assembles from drifting dust as it scrolls towards the middle of the screen and blows apart as it scrolls away; hovering or tapping a word scatters it
-- Full-width particle terrain sampled densest near the viewer, with a low foreground so it reaches the bottom of the screen on any aspect ratio
+- Real terrain: the hero landscape is Chappal Waddi, Nigeria's highest point (2,419 m), built from SRTM elevation data at true vertical scale and drawn as scan rows so ridges and river valleys read like routes; falls back to generated mountains if the heightmap cannot load
 - Performance safeguards: phones that report 2 GB of memory or less, or 2 CPU cores or fewer, start with fewer particles at 1x resolution, and any device that averages under about 30 fps after warm-up automatically drops to half the particles
 - The 3D layer is skipped entirely for reduced-motion users, devices without WebGL2, and when the CDN fails, leaving the rest of the site untouched
 - Contact form delivered through Web3Forms, with validation, a request timeout, double-submit protection, a hidden spam trap, and the visitor's message kept if sending fails
@@ -59,6 +59,8 @@ Every text colour meets WCAG AA contrast (4.5:1) on the backgrounds it sits on. 
 ├── scene.js              Three.js particle background (ES module)
 ├── skills.js             Skill particles on a 2D canvas (ES module)
 ├── favicon.svg           Site icon
+├── assets/
+│   └── chappal-waddi-heightmap.png   Elevation heightmap of Chappal Waddi (greyscale, 640 x 198)
 ├── John-Achadu-CV.pdf    Public copy of my CV
 └── README.md
 ```
@@ -96,6 +98,8 @@ The contact form sends messages through [Web3Forms](https://web3forms.com). The 
 The site is static and deployed on Vercel from the `main` branch. Pushing to `main` triggers a new deployment.
 
 ## Credits
+
+Terrain: Chappal Waddi, Taraba State, Nigeria. SRTM elevation data courtesy of the U.S. Geological Survey, via Mapzen Terrain Tiles (AWS Open Data). The heightmap covers about 24 x 7.5 km around the summit at 38 m resolution; elevations 855 m to 2,429 m are scaled to 0 to 255.
 
 The visual concept of a scroll-morphing particle background was inspired by [Kizito Udeinya's portfolio](https://kizito-udeinya.vercel.app). All code on this site was written for it.
 
