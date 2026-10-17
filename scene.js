@@ -1,5 +1,5 @@
 const PARTICLE_COUNT_DESKTOP = 26000;
-const PARTICLE_COUNT_MOBILE = 9000;
+const PARTICLE_COUNT_MOBILE = 12000;
 const PARTICLE_COUNT_LOW_END = 6000;
 const LOW_END_MEMORY_GB = 2;
 const LOW_END_CORES = 2;
@@ -13,7 +13,7 @@ const MAX_PIXEL_RATIO_DESKTOP = 2;
 const MAX_PIXEL_RATIO_MOBILE = 1.5;
 const OPACITY_DESKTOP = 0.75;
 const OPACITY_MOBILE = 0.6;
-const POINT_SIZE = 3.2;
+const POINT_SIZE = 3.6;
 const MORPH_EASING = 0.07;
 const POINTER_EASING = 0.05;
 const TRANSITION_START = 0.7;
@@ -38,7 +38,7 @@ const MOUNTAIN_HEIGHT = 2.8;
 const CAMERA_DISTANCE = 8.9;
 const MOUNTAIN_NEAR_Z = 2.5;
 const MOUNTAIN_FAR_Z = -20;
-const MOUNTAIN_BASE = -3.4;
+const MOUNTAIN_BASE = -4.8;
 const MOUNTAIN_FAR_GROWTH = 2;
 const MOUNTAIN_COVER_MARGIN = 1.2;
 const MOUNTAIN_MIN_COVER = 0.8;
@@ -53,9 +53,16 @@ const HEIGHTMAP_TIMEOUT_MS = 4000;
 const TERRAIN_HALF_WIDTH = 36;
 const TERRAIN_SUMMIT_X = 6;
 const TERRAIN_RELIEF = 4.7;
-const TERRAIN_ROW_FACTOR = 0.8;
-const TERRAIN_ROW_JITTER = 1;
-const TERRAIN_TILT = 0.38;
+const STIPPLE_FLOOR = 0.015;
+const STIPPLE_SLOPE_START = 0.05;
+const STIPPLE_SLOPE_FULL = 0.3;
+const SUNLIT_THRESHOLD = 0.93;
+const SUN_DIRECTION = { x: -0.6, y: 0.6, z: 0.55 };
+const SKY_DUST_SHARE = 0.006;
+const SKY_DUST_NEAR_Z = -16;
+const SKY_DUST_FAR_Z = -20;
+const MOBILE_POINT_SCALE = 1.4;
+const TERRAIN_TILT = 0.14;
 const TERRAIN_TILT_PIVOT_Z = -6;
 const FOG_NEAR = 18;
 const FOG_FAR = 32;
@@ -292,31 +299,59 @@ function tiltTerrain(y, z) {
   };
 }
 
-function terrainScan(count, aspect, heightmap) {
-  const out = new Float32Array(count * 3);
+function terrainNormal(x, z, heightmap, summitX) {
+  const stepX = (2 * TERRAIN_HALF_WIDTH) / (heightmap.width - 1);
+  const stepZ = (MOUNTAIN_NEAR_Z - MOUNTAIN_FAR_Z) / (heightmap.height - 1);
+  const slopeX = ((terrainHeight(x + stepX, z, heightmap, summitX) - terrainHeight(x - stepX, z, heightmap, summitX)) * TERRAIN_RELIEF) / (2 * stepX);
+  const slopeZ = ((terrainHeight(x, z + stepZ, heightmap, summitX) - terrainHeight(x, z - stepZ, heightmap, summitX)) * TERRAIN_RELIEF) / (2 * stepZ);
+  const length = Math.hypot(slopeX, 1, slopeZ);
+  return { x: -slopeX / length, y: 1 / length, z: -slopeZ / length };
+}
+
+function sunlight(normal) {
+  const length = Math.hypot(SUN_DIRECTION.x, SUN_DIRECTION.y, SUN_DIRECTION.z);
+  return (normal.x * SUN_DIRECTION.x + normal.y * SUN_DIRECTION.y + normal.z * SUN_DIRECTION.z) / length;
+}
+
+function terrainStipple(count, aspect, heightmap) {
+  const positions = new Float32Array(count * 3);
+  const mix = new Float32Array(count);
   const halfTan = Math.tan((CAMERA_FOV * Math.PI) / 360);
   const cover = Math.min(Math.max(aspect * MOUNTAIN_COVER_MARGIN, MOUNTAIN_MIN_COVER), MOUNTAIN_MAX_COVER);
   const summitX = terrainSummitX(aspect);
-  const rows = Math.max(1, Math.round(Math.sqrt(count) * TERRAIN_ROW_FACTOR));
-  const basePerRow = Math.floor(count / rows);
-  const remainder = count - basePerRow * rows;
+  const skyCount = Math.floor(count * SKY_DUST_SHARE);
+  const groundCount = count - skyCount;
+  const maxAttempts = groundCount * 40;
   let placed = 0;
-  for (let row = 0; row < rows; row += 1) {
-    const pointsInRow = basePerRow + (row < remainder ? 1 : 0);
-    const depthT = Math.pow((row + 0.5) / rows, MOUNTAIN_DEPTH_BIAS);
+  let attempts = 0;
+  while (placed < groundCount) {
+    attempts += 1;
+    const depthT = Math.pow(Math.random(), MOUNTAIN_DEPTH_BIAS);
     const z = MOUNTAIN_NEAR_Z + (MOUNTAIN_FAR_Z - MOUNTAIN_NEAR_Z) * depthT;
     const halfWidth = halfTan * (CAMERA_DISTANCE - z) * cover;
-    const foreground = foregroundFactor(depthT);
-    for (let i = 0; i < pointsInRow; i += 1) {
-      const across = (i + 0.5 + (Math.random() - 0.5) * TERRAIN_ROW_JITTER) / pointsInRow;
-      const x = (across * 2 - 1) * halfWidth;
-      const y = MOUNTAIN_BASE + terrainHeight(x, z, heightmap, summitX) * TERRAIN_RELIEF * foreground;
-      const tilted = tiltTerrain(y, z);
-      setPoint(out, placed, x, tilted.y, tilted.z);
-      placed += 1;
+    const x = (Math.random() * 2 - 1) * halfWidth;
+    const normal = terrainNormal(x, z, heightmap, summitX);
+    const steepness = 1 - normal.y;
+    const keepChance = STIPPLE_FLOOR + (1 - STIPPLE_FLOOR) * smoothstep(STIPPLE_SLOPE_START, STIPPLE_SLOPE_FULL, steepness);
+    if (attempts < maxAttempts && Math.random() > keepChance) {
+      continue;
     }
+    const y = MOUNTAIN_BASE + terrainHeight(x, z, heightmap, summitX) * TERRAIN_RELIEF * foregroundFactor(depthT);
+    const tilted = tiltTerrain(y, z);
+    setPoint(positions, placed, x, tilted.y, tilted.z);
+    const sunlit = sunlight(normal) > SUNLIT_THRESHOLD && steepness > STIPPLE_SLOPE_START;
+    mix[placed] = sunlit ? 0.7 + Math.random() * 0.3 : Math.random() * 0.3;
+    placed += 1;
   }
-  return out;
+  for (let i = 0; i < skyCount; i += 1) {
+    const z = SKY_DUST_NEAR_Z + (SKY_DUST_FAR_Z - SKY_DUST_NEAR_Z) * Math.random();
+    const halfHeight = halfTan * (CAMERA_DISTANCE - z);
+    const halfWidth = halfHeight * cover;
+    setPoint(positions, placed, (Math.random() * 2 - 1) * halfWidth, halfHeight * (0.15 + 0.85 * Math.random()), z);
+    mix[placed] = Math.random() * 0.3;
+    placed += 1;
+  }
+  return { positions, mix };
 }
 
 function terrainSummit(heightmap, aspect) {
@@ -531,9 +566,9 @@ function findHighestPoint(positions) {
   return { x: positions[highest * 3], z: positions[highest * 3 + 2] };
 }
 
-function buildShapes(count, aspect, heightmap) {
+function buildShapes(count, aspect, terrain) {
   return [
-    heightmap === null ? mountainRange(count, aspect) : terrainScan(count, aspect, heightmap),
+    terrain === null ? mountainRange(count, aspect) : terrain.positions,
     fibonacciSphere(count, 1.7),
     latticeCube(count, 2.4),
     networkGraph(count, 26, 1.9),
@@ -767,14 +802,15 @@ async function startScene() {
 
   const viewportAspect = window.innerHeight > 0 ? window.innerWidth / window.innerHeight : 1; 
   const heightmap = await loadHeightmap(HEIGHTMAP_URL);
-  const shapes = buildShapes(count, viewportAspect, heightmap);
+  const terrain = heightmap === null ? null : terrainStipple(count, viewportAspect, heightmap);
+  const shapes = buildShapes(count, viewportAspect, terrain);
   const pulseOrigin = heightmap === null ? findHighestPoint(shapes[0]) : terrainSummit(heightmap, viewportAspect);
   const geometry = new THREE.BufferGeometry();
   geometry.setAttribute("position", new THREE.BufferAttribute(shapes[0], 3));
   for (let s = 1; s < SHAPE_COUNT; s += 1) {
     geometry.setAttribute(`aShape${s}`, new THREE.BufferAttribute(shapes[s], 3));
   }
-  geometry.setAttribute("aMix", new THREE.BufferAttribute(buildColorMix(count), 1));
+  geometry.setAttribute("aMix", new THREE.BufferAttribute(terrain === null ? buildColorMix(count) : terrain.mix, 1));
   geometry.setAttribute("aScale", new THREE.BufferAttribute(buildScales(count), 1));
 
   const material = new THREE.ShaderMaterial({
@@ -784,7 +820,7 @@ async function startScene() {
       uProgress: { value: 0 },
       uTime: { value: 0 },
       uPixelRatio: { value: pixelRatio },
-      uSize: { value: POINT_SIZE },
+      uSize: { value: mobile ? POINT_SIZE * MOBILE_POINT_SCALE : POINT_SIZE },
       uOpacity: { value: mobile ? OPACITY_MOBILE : OPACITY_DESKTOP },
       uFogNear: { value: FOG_NEAR },
       uFogFar: { value: FOG_FAR },

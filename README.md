@@ -39,7 +39,7 @@ Every text colour meets WCAG AA contrast (4.5:1) on the backgrounds it sits on. 
 - Hero sky with a static, floating mountain range, a ripple that pulses out from the highest peak, and shooting stars that streak in from both sides
 - Centred hero, with proportions measured from the reference design and scaled with `clamp()` and `min()` for every screen size
 - Tech-stack particle scene: each skill assembles from drifting dust as it scrolls towards the middle of the screen and blows apart as it scrolls away; hovering or tapping a word scatters it
-- Real terrain: the hero landscape is Chappal Waddi, Nigeria's highest point (2,419 m), built from SRTM elevation data at true vertical scale and drawn as scan rows so ridges and river valleys read like routes; falls back to generated mountains if the heightmap cannot load
+- Real terrain: the hero landscape is Chappal Waddi, Nigeria's highest point (2,419 m), built from SRTM elevation data at true vertical scale and stippled by slope (steep ground gets dense dots, flat ground stays sparse), with sun-facing slopes picked out in the accent colour and a faint dust of points in the sky; falls back to generated mountains if the heightmap cannot load
 - Performance safeguards: phones that report 2 GB of memory or less, or 2 CPU cores or fewer, start with fewer particles at 1x resolution, and any device that averages under about 30 fps after warm-up automatically drops to half the particles
 - The 3D layer is skipped entirely for reduced-motion users, devices without WebGL2, and when the CDN fails, leaving the rest of the site untouched
 - Contact form delivered through Web3Forms, with validation, a request timeout, double-submit protection, a hidden spam trap, and the visitor's message kept if sending fails
