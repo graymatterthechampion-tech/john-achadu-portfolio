@@ -70,6 +70,15 @@ const PULSE_PERIOD_S = 7;
 const PULSE_REACH = 36;
 const PULSE_WIDTH = 1.8;
 const PULSE_COLOR = "#14A889";
+const SHAPE_SCALE = 1.6;
+const SHAPE_OPACITY_DESKTOP = 0.95;
+const SHAPE_OPACITY_MOBILE = 0.9;
+const SHAPE_POINT_BOOST = 1.45;
+const BAND_TOP_COLOR = "#C8102E";
+const BAND_MIDDLE_COLOR = "#E09A00";
+const BAND_BOTTOM_COLOR = "#007A4D";
+const BAND_EDGE = 0.25;
+const BAND_SOFTNESS = 0.12;
 const TAU = Math.PI * 2;
 
 
@@ -92,8 +101,18 @@ const vertexShader = `
   uniform float uPulsePeriod;
   uniform float uPulseReach;
   uniform float uPulseWidth;
+  uniform float uShapePointBoost;
+  uniform vec3 uColorA;
+  uniform vec3 uColorB;
+  uniform vec3 uBandTop;
+  uniform vec3 uBandMiddle;
+  uniform vec3 uBandBottom;
+  uniform float uBandEdge;
+  uniform float uBandSoftness;
+  uniform float uBandHalfHeights[5];
 
-  varying float vMix;
+  varying vec3 vColor;
+  varying float vRelease;
   varying float vFog;
   varying float vPulse;
 
@@ -118,21 +137,35 @@ const vertexShader = `
 
     vec4 mvPosition = modelViewMatrix * vec4(p, 1.0);
     float depth = max(-mvPosition.z, 1.0);
-    gl_PointSize = uSize * aScale * uPixelRatio * pow(6.0 / depth, 0.5) * (1.0 + pulse * 0.8);
+    float release = clamp(uProgress, 0.0, 1.0);
+    gl_PointSize = uSize * aScale * uPixelRatio * pow(6.0 / depth, 0.5) * (1.0 + pulse * 0.8) * mix(1.0, uShapePointBoost, release);
     gl_Position = projectionMatrix * mvPosition;
-    vMix = aMix;
+
+    float section = clamp(uProgress, 1.0, 5.0);
+    float lowerSection = floor(section);
+    float upperSection = min(lowerSection + 1.0, 5.0);
+    float halfHeight = mix(uBandHalfHeights[int(lowerSection) - 1], uBandHalfHeights[int(upperSection) - 1], section - lowerSection);
+    float height = p.y / max(halfHeight, 0.001);
+    float topWeight = smoothstep(uBandEdge - uBandSoftness, uBandEdge + uBandSoftness, height);
+    float bottomWeight = 1.0 - smoothstep(-uBandEdge - uBandSoftness, -uBandEdge + uBandSoftness, height);
+    vec3 bandColor = mix(uBandMiddle, uBandTop, topWeight);
+    bandColor = mix(bandColor, uBandBottom, bottomWeight);
+    bandColor *= 0.85 + 0.3 * aMix;
+    vec3 heroColor = mix(uColorA, uColorB, aMix);
+    vColor = mix(heroColor, bandColor, release);
+    vRelease = release;
     vFog = 1.0 - smoothstep(uFogNear, uFogFar, depth);
     vPulse = pulse;
   }
 `;
 
 const fragmentShader = `
-  uniform vec3 uColorA;
-  uniform vec3 uColorB;
   uniform vec3 uPulseColor;
   uniform float uOpacity;
+  uniform float uShapeOpacity;
 
-  varying float vMix;
+  varying vec3 vColor;
+  varying float vRelease;
   varying float vFog;
   varying float vPulse;
 
@@ -142,9 +175,9 @@ const fragmentShader = `
       discard;
     }
     float glow = clamp(vPulse, 0.0, 1.0);
-    float alpha = smoothstep(0.5, 0.1, distanceFromCenter) * uOpacity * vFog * (1.0 + glow * 1.5);
-    vec3 baseColor = mix(uColorA, uColorB, vMix);
-    gl_FragColor = vec4(mix(baseColor, uPulseColor, glow), alpha);
+    float opacity = mix(uOpacity, uShapeOpacity, vRelease);
+    float alpha = smoothstep(0.5, 0.1, distanceFromCenter) * opacity * vFog * (1.0 + glow * 1.5);
+    gl_FragColor = vec4(mix(vColor, uPulseColor, glow), alpha);
     #include <colorspace_fragment>
   }
 `;
@@ -569,12 +602,21 @@ function findHighestPoint(positions) {
 function buildShapes(count, aspect, terrain) {
   return [
     terrain === null ? mountainRange(count, aspect) : terrain.positions,
-    fibonacciSphere(count, 1.7),
-    latticeCube(count, 2.4),
-    networkGraph(count, 26, 1.9),
-    doubleHelix(count, 0.9, 4.2, 2.5),
-    envelopeShape(count, 3.6, 2.3),
+    fibonacciSphere(count, 1.7 * SHAPE_SCALE),
+    latticeCube(count, 2.4 * SHAPE_SCALE),
+    networkGraph(count, 26, 1.9 * SHAPE_SCALE),
+    doubleHelix(count, 0.9 * SHAPE_SCALE, 4.2 * SHAPE_SCALE, 2.5),
+    envelopeShape(count, 3.6 * SHAPE_SCALE, 2.3 * SHAPE_SCALE),
   ];
+}
+
+function halfHeight(positions) {
+  let highest = 0;
+  const total = positions.length / 3;
+  for (let i = 0; i < total; i += 1) {
+    highest = Math.max(highest, Math.abs(positions[i * 3 + 1]));
+  }
+  return highest;
 }
 
 function buildColorMix(count) {
@@ -822,6 +864,14 @@ async function startScene() {
       uPixelRatio: { value: pixelRatio },
       uSize: { value: mobile ? POINT_SIZE * MOBILE_POINT_SCALE : POINT_SIZE },
       uOpacity: { value: mobile ? OPACITY_MOBILE : OPACITY_DESKTOP },
+      uShapeOpacity: { value: mobile ? SHAPE_OPACITY_MOBILE : SHAPE_OPACITY_DESKTOP },
+      uShapePointBoost: { value: SHAPE_POINT_BOOST },
+      uBandTop: { value: new THREE.Color(BAND_TOP_COLOR) },
+      uBandMiddle: { value: new THREE.Color(BAND_MIDDLE_COLOR) },
+      uBandBottom: { value: new THREE.Color(BAND_BOTTOM_COLOR) },
+      uBandEdge: { value: BAND_EDGE },
+      uBandSoftness: { value: BAND_SOFTNESS },
+      uBandHalfHeights: { value: shapes.slice(1).map(halfHeight) },
       uFogNear: { value: FOG_NEAR },
       uFogFar: { value: FOG_FAR },
       uPulseOrigin: { value: new THREE.Vector2(pulseOrigin.x, pulseOrigin.z) },

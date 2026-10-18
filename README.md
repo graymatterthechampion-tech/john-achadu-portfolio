@@ -31,11 +31,13 @@ Light theme: warm cream background with ink text, using the neutral palette of t
 | `signal` | `#0A6B58` | Accent: labels, links, primary button |
 | `volt` | `#5A4BD6` | Secondary accent |
 
-Every text colour meets WCAG AA contrast (4.5:1) on the backgrounds it sits on. Sections after the hero sit on cream at 86% opacity so the 3D shapes show through as texture without competing with the text.
+Every text colour meets WCAG AA contrast (4.5:1) on the backgrounds it sits on. Sections after the hero sit on cream at 25% opacity (40% on phones) so the 3D shapes show through boldly; text in those sections carries a soft cream halo, the About text sits in a faded clearing, and cards have a near-solid fill, so the shapes never sit directly behind words.
+
+The hero terrain keeps the ink-and-teal palette. Every shape after it is coloured in three horizontal bands: red `#C8102E` on top, gold `#E09A00` in the middle and green `#007A4D` at the bottom, blending softly where they meet.
 
 ## Features
 
-- Scroll-driven 3D particle background that morphs into a new shape for each section: a jagged mountain range, a globe, a lattice cube, a node network, a double helix and an envelope
+- Scroll-driven 3D particle background that morphs into a new shape for each section: a jagged mountain range, a globe, a lattice cube, a node network, a double helix and an envelope; the shapes after the hero are drawn larger, with bigger dots, in red, gold and green bands
 - Hero sky with a static, floating mountain range, a ripple that pulses out from the highest peak, and shooting stars that streak in from both sides
 - Centred hero, with proportions measured from the reference design and scaled with `clamp()` and `min()` for every screen size
 - Tech-stack particle scene: each skill assembles from drifting dust as it scrolls towards the middle of the screen and blows apart as it scrolls away; hovering or tapping a word scatters it

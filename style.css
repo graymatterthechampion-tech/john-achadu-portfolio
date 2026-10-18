@@ -93,11 +93,31 @@ body {
    Hero
    ============================================ */
 main > section:not(.hero) {
-  background-color: rgba(235, 231, 224, 0.86);
+  background-color: rgba(235, 231, 224, 0.25);
+}
+
+main > section:not(.hero) :is(h2, h3, p, li, label) {
+  text-shadow: 0 0 2px #EBE7E0, 0 0 6px #EBE7E0, 0 0 14px #EBE7E0, 0 0 22px #EBE7E0, 0 0 22px #EBE7E0;
 }
 
 main > section.bg-panel\/40 {
-  background-color: rgba(226, 221, 212, 0.86);
+  background-color: rgba(226, 221, 212, 0.25);
+}
+
+.clearing {
+  background: rgba(235, 231, 224, 0.8);
+  box-shadow: 0 0 32px 24px rgba(235, 231, 224, 0.8);
+  border-radius: 24px;
+}
+
+@media (max-width: 767px) {
+  main > section:not(.hero) {
+    background-color: rgba(235, 231, 224, 0.4);
+  }
+
+  main > section.bg-panel\/40 {
+    background-color: rgba(226, 221, 212, 0.4);
+  }
 }
 
 .hero {
@@ -428,6 +448,7 @@ main > section.bg-panel\/40 {
    About stat cards
    ============================================ */
 .stat-card {
+  background: rgba(243, 240, 234, 0.9);
   border: 1px solid #CECBC5;
   padding: 1.5rem;
   transition: border-color 0.25s ease, transform 0.25s ease;
@@ -444,6 +465,7 @@ main > section.bg-panel\/40 {
 .skill-group {
   border: 1px solid #CECBC5;
   padding: 2rem;
+  background: rgba(243, 240, 234, 0.9);
   transition: border-color 0.25s ease;
 }
 
